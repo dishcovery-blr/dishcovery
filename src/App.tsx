@@ -38,12 +38,9 @@ function AppRoutes() {
     <>
       <Navbar />
       <Routes>
-        {/* Public routes - no login needed */}
-        <Route path="/" element={!user ? <LandingPage /> : <RootRedirect />} />
+        <Route path="/" element={user ? <RootRedirect /> : <LandingPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup" element={<SignupPage />} />
-
-        {/* Protected routes - login required */}
         <Route path="/browse" element={user ? <BrowsePage /> : <Navigate to="/" replace />} />
         <Route path="/seller/onboarding" element={user ? <SellerOnboarding /> : <Navigate to="/" replace />} />
         <Route path="/seller/dashboard" element={user ? <SellerDashboard /> : <Navigate to="/" replace />} />
@@ -56,35 +53,6 @@ function AppRoutes() {
         <Route path="/admin/sellers" element={user ? <AdminSellers /> : <Navigate to="/" replace />} />
         <Route path="/admin/fssai" element={user ? <AdminFssai /> : <Navigate to="/" replace />} />
         <Route path="/admin/consumers" element={user ? <AdminConsumers /> : <Navigate to="/" replace />} />
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
-    </>
-  )
-}
-
-function AppRoutes() {
-  const { user, loading } = useAuth()
-  if (loading) return <div className="page-loading">Loading…</div>
-
-  return (
-    <>
-      <Navbar />
-      <Routes>
-        <Route path="/" element={user ? <RootRedirect /> : <LandingPage />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/signup" element={<SignupPage />} />
-        <Route path="/browse" element={<BrowsePage />} />
-        <Route path="/seller/onboarding" element={<SellerOnboarding />} />
-        <Route path="/seller/dashboard" element={<SellerDashboard />} />
-        <Route path="/seller/profile" element={<SellerProfileEdit />} />
-        <Route path="/seller/gallery" element={<SellerGallery />} />
-        <Route path="/seller/menu" element={<SellerMenuEdit />} />
-        <Route path="/seller/offers" element={<SellerOffers />} />
-        <Route path="/seller/:sellerId" element={<SellerProfilePage />} />
-        <Route path="/admin" element={<AdminDashboard />} />
-        <Route path="/admin/sellers" element={<AdminSellers />} />
-        <Route path="/admin/fssai" element={<AdminFssai />} />
-        <Route path="/admin/consumers" element={<AdminConsumers />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </>

@@ -464,7 +464,7 @@ img { max-width: 100%; display: block; }
 /* Hero */
 .landing-hero { background: linear-gradient(160deg, #085041 0%, #1D9E75 100%); padding: 48px 24px 56px; text-align: center; }
 .landing-logo-wrap { margin-bottom: 24px; }
-.landing-logo { height: 72px; width: auto; margin: 0 auto; }
+.landing-logo { height: 160px; width: auto; margin: 0 auto; }
 .landing-headline { font-size: 28px; font-weight: 800; color: #fff; line-height: 1.25; margin-bottom: 12px; }
 .landing-sub { font-size: 15px; color: rgba(255,255,255,0.85); line-height: 1.6; margin-bottom: 28px; }
 .landing-ctas { display: flex; flex-direction: column; gap: 12px; max-width: 320px; margin: 0 auto; }

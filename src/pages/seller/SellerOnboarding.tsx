@@ -12,9 +12,11 @@ const CUISINE_OPTIONS = [
 ]
 
 const DIETARY_OPTIONS = [
-  'Eggless', 'Vegan', 'Gluten-Free', 'Nut-Free', 'Dairy-Free',
-  'Jain', 'Keto', 'Low Sugar',
+  'Eggless', 'Vegan', 'Gluten-Free', 'Nut-Free', 'Dairy-Free', 'Jain', 'Keto', 'Low Sugar',
 ]
+
+const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+const TIMES = ['6am', '7am', '8am', '9am', '10am', '11am', '12pm', '1pm', '2pm', '3pm', '4pm', '5pm', '6pm', '7pm', '8pm', '9pm', '10pm']
 
 export default function SellerOnboarding() {
   const { user, refreshSeller } = useAuth()
@@ -30,16 +32,30 @@ export default function SellerOnboarding() {
     whatsapp_number: '',
     location_text: '',
     bio: '',
-    operating_hours: '',
     cuisine_tags: [] as string[],
     dietary_tags: [] as string[],
     accepts_custom_orders: true,
   })
+
+  const [activeDays, setActiveDays] = useState<string[]>([])
+  const [openTime, setOpenTime] = useState('9am')
+  const [closeTime, setCloseTime] = useState('8pm')
+
   const [fssaiOption, setFssaiOption] = useState<'have_it' | 'in_progress' | 'need_help'>('need_help')
   const [fssaiNumber, setFssaiNumber] = useState('')
 
   function toggleTag(arr: string[], val: string): string[] {
     return arr.includes(val) ? arr.filter(t => t !== val) : [...arr, val]
+  }
+
+  function toggleDay(day: string) {
+    setActiveDays(prev => prev.includes(day) ? prev.filter(d => d !== day) : [...prev, day])
+  }
+
+  function buildHoursString() {
+    if (activeDays.length === 0) return ''
+    const sorted = DAYS.filter(d => activeDays.includes(d))
+    return `${sorted.join(', ')} · ${openTime} – ${closeTime}`
   }
 
   async function handleSubmit() {
@@ -58,28 +74,31 @@ export default function SellerOnboarding() {
           auth_user_id: user.id,
           seller_type: sellerType,
           status: 'pending',
-          ...form,
+          display_name: form.display_name,
+          whatsapp_number: form.whatsapp_number,
+          location_text: form.location_text,
+          bio: form.bio || null,
+          cuisine_tags: form.cuisine_tags,
+          dietary_tags: form.dietary_tags,
+          accepts_custom_orders: form.accepts_custom_orders,
+          operating_hours: buildHoursString() || null,
           fssai_number: fssaiNumber || null,
           fssai_status: fssaiStatus,
         })
         .select()
         .single()
 
-      if (sellerErr) throw sellerErr
-
-      // Send welcome email via Supabase edge function
-      await supabase.functions.invoke('send-email', {
-        body: {
-          type: 'seller_welcome',
-          seller_id: seller.id,
-          email: user.email,
-          display_name: form.display_name,
-        },
-      })
+      if (sellerErr) {
+        console.error('Seller insert error:', sellerErr)
+        setError(sellerErr.message)
+        setLoading(false)
+        return
+      }
 
       await refreshSeller()
       setStep('done')
     } catch (err) {
+      console.error('Submit error:', err)
       setError(err instanceof Error ? err.message : 'Something went wrong')
     } finally {
       setLoading(false)
@@ -89,14 +108,14 @@ export default function SellerOnboarding() {
   if (step === 'done') {
     return (
       <div className="onboarding-container">
-        <div className="done-card">
+        <div className="onboarding-card done-card">
           <div className="done-icon">🎉</div>
           <h1>You're registered!</h1>
-          <p>
+          <p style={{ color: '#666', marginTop: 8, marginBottom: 24 }}>
             Your profile is under review. We'll email you within 24 hours once approved.
             While you wait, you can set up your menu and add photos.
           </p>
-          <button onClick={() => navigate('/seller/dashboard')} className="btn-primary">
+          <button className="btn-primary" onClick={() => navigate('/seller/dashboard')}>
             Go to dashboard
           </button>
         </div>
@@ -113,7 +132,6 @@ export default function SellerOnboarding() {
           <div className="step">
             <h2>What best describes you?</h2>
             <p className="step-subtitle">This helps us show you to the right customers.</p>
-
             <div className="type-cards">
               <button
                 className={`type-card ${sellerType === 'baker' ? 'selected' : ''}`}
@@ -132,10 +150,7 @@ export default function SellerOnboarding() {
                 <span>I take orders occasionally from my home kitchen</span>
               </button>
             </div>
-
-            <button className="btn-primary" onClick={() => setStep('details')}>
-              Continue
-            </button>
+            <button className="btn-primary" onClick={() => setStep('details')}>Continue</button>
           </div>
         )}
 
@@ -215,14 +230,35 @@ export default function SellerOnboarding() {
             </div>
 
             <div className="form-group">
-              <label>Operating hours</label>
-              <input
-                type="text"
-                placeholder="e.g. Mon–Sat, 9am–8pm"
-                value={form.operating_hours}
-                onChange={e => setForm({ ...form, operating_hours: e.target.value })}
-              />
+              <label>Days you operate</label>
+              <div className="days-grid">
+                {DAYS.map(day => (
+                  <button
+                    key={day}
+                    className={`day-btn ${activeDays.includes(day) ? 'selected' : ''}`}
+                    onClick={() => toggleDay(day)}
+                  >
+                    {day}
+                  </button>
+                ))}
+              </div>
             </div>
+
+            {activeDays.length > 0 && (
+              <div className="form-group">
+                <label>Operating hours</label>
+                <div className="hours-row">
+                  <select value={openTime} onChange={e => setOpenTime(e.target.value)}>
+                    {TIMES.map(t => <option key={t} value={t}>{t}</option>)}
+                  </select>
+                  <span>to</span>
+                  <select value={closeTime} onChange={e => setCloseTime(e.target.value)}>
+                    {TIMES.map(t => <option key={t} value={t}>{t}</option>)}
+                  </select>
+                </div>
+                <span className="hint">Preview: {buildHoursString()}</span>
+              </div>
+            )}
 
             <div className="form-group">
               <label className="checkbox-label">
@@ -281,7 +317,7 @@ export default function SellerOnboarding() {
             </div>
 
             {fssaiOption === 'have_it' && (
-              <div className="form-group">
+              <div className="form-group" style={{ marginTop: 16 }}>
                 <label>FSSAI registration number</label>
                 <input
                   type="text"
@@ -294,7 +330,7 @@ export default function SellerOnboarding() {
             )}
 
             {fssaiOption === 'need_help' && (
-              <div className="fssai-guide-preview">
+              <div className="fssai-guide-preview" style={{ marginTop: 16 }}>
                 <h4>How to register as an individual home baker</h4>
                 <ol>
                   <li>Go to <strong>foscos.fssai.gov.in</strong></li>
@@ -306,27 +342,21 @@ export default function SellerOnboarding() {
                   <li>Certificate arrives in 7 working days</li>
                 </ol>
                 <p className="guide-note">
-                  You don't need a company or brand name — you can register as an individual.
-                  Your home address is a valid business address.
+                  You don't need a company or brand name — you can register as an individual from your home address.
                 </p>
-                <a
-                  href="https://foscos.fssai.gov.in"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="btn-outline"
-                >
+                <a href="https://foscos.fssai.gov.in" target="_blank" rel="noopener noreferrer" className="btn-outline">
                   Open FSSAI portal ↗
                 </a>
                 <p className="grace-note">
-                  Your profile will be listed as <strong>"Registration in progress"</strong> while
-                  you complete this. You have 90 days from today to submit your registration number.
+                  Your profile will be listed as <strong>"Registration in progress"</strong> while you complete this.
+                  You have 90 days from today to submit your registration number.
                 </p>
               </div>
             )}
 
-            {error && <p className="error-msg">{error}</p>}
+            {error && <p className="error-msg" style={{ marginTop: 12 }}>{error}</p>}
 
-            <div className="step-actions">
+            <div className="step-actions" style={{ marginTop: 16 }}>
               <button className="btn-secondary" onClick={() => setStep('details')}>Back</button>
               <button
                 className="btn-primary"
@@ -347,7 +377,6 @@ function StepIndicator({ current }: { current: Step }) {
   const steps: Step[] = ['type', 'details', 'fssai']
   const labels = ['Type', 'Details', 'FSSAI']
   const currentIdx = steps.indexOf(current)
-
   return (
     <div className="step-indicator">
       {steps.map((s, i) => (

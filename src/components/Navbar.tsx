@@ -17,7 +17,7 @@ export default function Navbar() {
   return (
     <nav className="navbar">
       <button className="navbar-logo" onClick={() => navigate(role === 'admin' ? '/admin' : role === 'seller' ? '/seller/dashboard' : '/browse')}>
-        <img src="/src/assets/logo.png" alt="Dishcovery" className="navbar-logo-img" />
+        <img src="/logo.png" alt="Dishcovery" className="navbar-logo-img" />
       </button>
 
       <div className="navbar-right">

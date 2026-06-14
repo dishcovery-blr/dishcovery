@@ -8,10 +8,11 @@ const CUISINE_OPTIONS = [
   'South Indian', 'North Indian', 'Continental', 'Chinese', 'Snacks',
   'Healthy & Diet', 'Biryani', 'Desserts', 'Beverages', 'Other',
 ]
-
 const DIETARY_OPTIONS = [
   'Eggless', 'Vegan', 'Gluten-Free', 'Nut-Free', 'Dairy-Free', 'Jain', 'Keto', 'Low Sugar',
 ]
+const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+const TIMES = ['6am','7am','8am','9am','10am','11am','12pm','1pm','2pm','3pm','4pm','5pm','6pm','7pm','8pm','9pm','10pm']
 
 export default function SellerProfileEdit() {
   const { seller, refreshSeller } = useAuth()
@@ -22,15 +23,18 @@ export default function SellerProfileEdit() {
   const [uploadingAvatar, setUploadingAvatar] = useState(false)
   const [uploadingCover, setUploadingCover] = useState(false)
 
+  const [activeDays, setActiveDays] = useState<string[]>([])
+  const [openTime, setOpenTime] = useState('9am')
+  const [closeTime, setCloseTime] = useState('8pm')
+  const [temporarilyClosed, setTemporarilyClosed] = useState(false)
+
   const [form, setForm] = useState({
     display_name: '',
     bio: '',
     whatsapp_number: '',
-    phone_number: '',
     instagram_url: '',
     location_text: '',
     delivery_radius_km: 5,
-    operating_hours: '',
     cuisine_tags: [] as string[],
     dietary_tags: [] as string[],
     accepts_custom_orders: true,
@@ -43,21 +47,48 @@ export default function SellerProfileEdit() {
         display_name: seller.display_name ?? '',
         bio: seller.bio ?? '',
         whatsapp_number: seller.whatsapp_number ?? '',
-        phone_number: seller.phone_number ?? '',
         instagram_url: seller.instagram_url ?? '',
         location_text: seller.location_text ?? '',
         delivery_radius_km: seller.delivery_radius_km ?? 5,
-        operating_hours: seller.operating_hours ?? '',
         cuisine_tags: seller.cuisine_tags ?? [],
         dietary_tags: seller.dietary_tags ?? [],
         accepts_custom_orders: seller.accepts_custom_orders ?? true,
         fssai_number: seller.fssai_number ?? '',
       })
+
+      // Parse existing hours string back to structured fields
+      if (seller.operating_hours) {
+        if (seller.operating_hours === 'TEMPORARILY_CLOSED') {
+          setTemporarilyClosed(true)
+        } else {
+          // Format: "Mon, Tue, Wed · 9am – 8pm"
+          const parts = seller.operating_hours.split(' · ')
+          if (parts.length === 2) {
+            setActiveDays(parts[0].split(', '))
+            const times = parts[1].split(' – ')
+            if (times.length === 2) {
+              setOpenTime(times[0])
+              setCloseTime(times[1])
+            }
+          }
+        }
+      }
     }
   }, [seller])
 
   function toggleTag(arr: string[], val: string): string[] {
     return arr.includes(val) ? arr.filter(t => t !== val) : [...arr, val]
+  }
+
+  function toggleDay(day: string) {
+    setActiveDays(prev => prev.includes(day) ? prev.filter(d => d !== day) : [...prev, day])
+  }
+
+  function buildHoursString() {
+    if (temporarilyClosed) return 'TEMPORARILY_CLOSED'
+    if (activeDays.length === 0) return ''
+    const sorted = DAYS.filter(d => activeDays.includes(d))
+    return `${sorted.join(', ')} · ${openTime} – ${closeTime}`
   }
 
   async function handleSave() {
@@ -68,6 +99,7 @@ export default function SellerProfileEdit() {
       .from('sellers')
       .update({
         ...form,
+        operating_hours: buildHoursString() || null,
         fssai_status: form.fssai_number && form.fssai_number !== seller.fssai_number
           ? 'in_progress' : seller.fssai_status,
       })
@@ -88,9 +120,7 @@ export default function SellerProfileEdit() {
     setter(true)
     const ext = file.name.split('.').pop()
     const path = `${seller.auth_user_id}/${type}.${ext}`
-    const { error: uploadErr } = await supabase.storage
-      .from('seller-media')
-      .upload(path, file, { upsert: true })
+    const { error: uploadErr } = await supabase.storage.from('seller-media').upload(path, file, { upsert: true })
     if (!uploadErr) {
       const field = type === 'avatar' ? 'avatar_url' : 'cover_photo_url'
       await supabase.from('sellers').update({ [field]: path }).eq('id', seller.id)
@@ -101,12 +131,8 @@ export default function SellerProfileEdit() {
 
   if (!seller) return <div className="page-loading">Loading…</div>
 
-  const avatarUrl = seller.avatar_url
-    ? `${import.meta.env.VITE_SUPABASE_URL}/storage/v1/object/public/seller-media/${seller.avatar_url}`
-    : null
-  const coverUrl = seller.cover_photo_url
-    ? `${import.meta.env.VITE_SUPABASE_URL}/storage/v1/object/public/seller-media/${seller.cover_photo_url}`
-    : null
+  const avatarUrl = seller.avatar_url ? `${import.meta.env.VITE_SUPABASE_URL}/storage/v1/object/public/seller-media/${seller.avatar_url}` : null
+  const coverUrl = seller.cover_photo_url ? `${import.meta.env.VITE_SUPABASE_URL}/storage/v1/object/public/seller-media/${seller.cover_photo_url}` : null
 
   return (
     <div className="editor-page">
@@ -150,16 +176,65 @@ export default function SellerProfileEdit() {
             <label>Bio</label>
             <textarea rows={4} value={form.bio} onChange={e => setForm({ ...form, bio: e.target.value })} placeholder="Tell customers what makes your food special…" />
           </div>
-          <div className="form-group">
-            <label>Operating hours</label>
-            <input type="text" value={form.operating_hours} onChange={e => setForm({ ...form, operating_hours: e.target.value })} placeholder="e.g. Mon–Sat, 9am–8pm" />
-          </div>
           <div className="form-group checkbox-group">
             <label>
               <input type="checkbox" checked={form.accepts_custom_orders} onChange={e => setForm({ ...form, accepts_custom_orders: e.target.checked })} />
               Accept custom orders
             </label>
           </div>
+        </div>
+
+        <div className="form-section">
+          <h2>Availability</h2>
+
+          <div className="form-group">
+            <label className="checkbox-label" style={{ marginBottom: 12 }}>
+              <input type="checkbox" checked={temporarilyClosed} onChange={e => setTemporarilyClosed(e.target.checked)} />
+              <span>
+                <strong>Temporarily closed</strong>
+                <span style={{ display: 'block', fontSize: 12, color: '#888', fontWeight: 400 }}>
+                  Pause your listing without losing your profile. Customers will see you're temporarily unavailable.
+                </span>
+              </span>
+            </label>
+          </div>
+
+          {!temporarilyClosed && (
+            <>
+              <div className="form-group">
+                <label>Days you operate</label>
+                <div className="days-grid">
+                  {DAYS.map(day => (
+                    <button
+                      key={day}
+                      className={`day-btn ${activeDays.includes(day) ? 'selected' : ''}`}
+                      onClick={() => toggleDay(day)}
+                    >
+                      {day}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {activeDays.length > 0 && (
+                <div className="form-group">
+                  <label>Operating hours</label>
+                  <div className="hours-row">
+                    <select value={openTime} onChange={e => setOpenTime(e.target.value)}>
+                      {TIMES.map(t => <option key={t} value={t}>{t}</option>)}
+                    </select>
+                    <span>to</span>
+                    <select value={closeTime} onChange={e => setCloseTime(e.target.value)}>
+                      {TIMES.map(t => <option key={t} value={t}>{t}</option>)}
+                    </select>
+                  </div>
+                  {activeDays.length > 0 && (
+                    <span className="field-hint">Preview: {DAYS.filter(d => activeDays.includes(d)).join(', ')} · {openTime} – {closeTime}</span>
+                  )}
+                </div>
+              )}
+            </>
+          )}
         </div>
 
         <div className="form-section">
@@ -212,9 +287,6 @@ export default function SellerProfileEdit() {
           <div className="form-group">
             <label>Registration number</label>
             <input type="text" value={form.fssai_number} onChange={e => setForm({ ...form, fssai_number: e.target.value })} placeholder="14-digit registration number" maxLength={14} />
-            <span className="field-hint">
-              Don't have one? <button className="link-btn" onClick={() => navigate('/seller/fssai')}>Get your FSSAI registration →</button>
-            </span>
           </div>
         </div>
 

@@ -38,7 +38,7 @@ export default function SellerDashboard() {
     <div className="dashboard-page">
       <div className="dashboard-header">
         <div>
-          <h1 className="dashboard-title">Welcome back{seller.display_name ? `, ${seller.display_name.split(' ')[0]}` : ''}!</h1>
+          <h1 className="dashboard-title">Welcome back, {seller.display_name}!</h1>
           <p className="dashboard-subtitle">Manage your Dishcovery listing</p>
         </div>
         <a href={`/seller/${seller.id}`} className="view-listing-btn" target="_blank" rel="noopener noreferrer">
@@ -55,7 +55,7 @@ export default function SellerDashboard() {
       {isExpired && (
         <div className="status-banner expired">⚠ Your subscription has expired. <button onClick={() => navigate('/seller/subscribe')}>Renew now</button></div>
       )}
-      {isTrial && (
+      {!isExpired && isTrial && (
         <div className="status-banner trial">🎉 Free trial — {daysLeft} days remaining. <button onClick={() => navigate('/seller/subscribe')}>Subscribe</button></div>
       )}
       {seller.fssai_status === 'not_submitted' && (

@@ -48,8 +48,11 @@ img { max-width: 100%; display: block; }
 
 /* ── Offers ───────────────────────────────────────────────────── */
 .active-offers { padding: 8px 16px; }
-.offer-banner { display: flex; justify-content: space-between; align-items: center; background: #FAEEDA; border-radius: 8px; padding: 8px 12px; font-size: 13px; color: #854F0B; margin-bottom: 6px; }
-.offer-expiry { font-size: 11px; opacity: 0.75; }
+.offer-banner { display: flex; align-items: center; gap: 10px; background: #FAEEDA; border-radius: 8px; padding: 8px 12px; font-size: 13px; color: #854F0B; margin-bottom: 6px; }
+.offer-banner-img { width: 48px; height: 48px; border-radius: 6px; object-fit: cover; flex-shrink: 0; }
+.offer-banner-text { flex: 1; }
+.offer-body-preview { display: block; font-size: 11px; opacity: 0.8; margin-top: 2px; }
+.offer-expiry { font-size: 11px; opacity: 0.75; white-space: nowrap; }
 
 /* ── Tabs ─────────────────────────────────────────────────────── */
 .profile-tabs { display: flex; border-bottom: 1px solid #eee; margin-top: 10px; }
@@ -63,8 +66,9 @@ img { max-width: 100%; display: block; }
 .about-section h2 { font-size: 14px; font-weight: 600; color: #888; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px; }
 .about-section p { font-size: 14px; line-height: 1.6; color: #333; }
 .hours-text { font-size: 14px; color: #333; white-space: pre-line; }
-.location-block p { font-size: 14px; color: #333; }
 .delivery-note { font-size: 12px; color: #888; margin-top: 4px; }
+.closed-badge { display: inline-block; background: #FCEBEB; color: #A32D2D; font-size: 11px; padding: 2px 10px; border-radius: 20px; margin-left: 8px; vertical-align: middle; }
+.closed-notice { background: #FCEBEB; color: #A32D2D; padding: 12px 14px; border-radius: 8px; font-size: 14px; margin-bottom: 16px; }
 
 /* ── Gallery tab ──────────────────────────────────────────────── */
 .gallery-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
@@ -80,17 +84,19 @@ img { max-width: 100%; display: block; }
 /* ── Menu tab ─────────────────────────────────────────────────── */
 .menu-category { margin-bottom: 20px; }
 .menu-cat-title { font-size: 13px; font-weight: 600; color: #888; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid #eee; padding-bottom: 6px; margin-bottom: 8px; }
-.menu-item { display: flex; align-items: flex-start; gap: 10px; padding: 10px 0; border-bottom: 1px solid #f5f5f5; }
+.menu-item { display: flex; align-items: center; gap: 10px; padding: 12px 0; border-bottom: 1px solid #f5f5f5; }
 .menu-item:last-child { border-bottom: none; }
-.menu-item-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; margin-top: 4px; }
-.menu-item-thumb { width: 52px; height: 52px; border-radius: 8px; object-fit: cover; flex-shrink: 0; }
+.menu-item-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
 .menu-item-info { flex: 1; }
 .menu-item-name { display: block; font-size: 14px; font-weight: 500; color: #1a1a1a; margin-bottom: 2px; }
-.menu-item-desc { display: block; font-size: 12px; color: #888; margin-bottom: 4px; line-height: 1.4; }
-.menu-item-flags { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 4px; }
+.menu-item-desc { display: block; font-size: 12px; color: #888; line-height: 1.4; }
+.menu-item-right { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+.menu-item-price { font-size: 14px; font-weight: 600; color: #1a1a1a; white-space: nowrap; }
+.menu-item-thumb { width: 56px; height: 56px; border-radius: 8px; object-fit: cover; }
+.menu-item-thumb-sm { width: 36px; height: 36px; border-radius: 6px; object-fit: cover; flex-shrink: 0; }
+.menu-item-flags-inline { display: block; font-size: 11px; color: #3B6D11; margin-top: 2px; }
 .dietary-flag { font-size: 10px; padding: 2px 6px; background: #EAF3DE; color: #3B6D11; border-radius: 20px; }
 .gallery-link { font-size: 11px; color: #1D9E75; display: inline-flex; align-items: center; gap: 3px; margin-top: 4px; }
-.menu-item-price { font-size: 14px; font-weight: 600; color: #1a1a1a; white-space: nowrap; padding-top: 2px; }
 
 /* ── Reviews tab ──────────────────────────────────────────────── */
 .contact-section { margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid #eee; }
@@ -199,8 +205,8 @@ img { max-width: 100%; display: block; }
 .form-section h2 { font-size: 13px; font-weight: 600; color: #888; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 14px; }
 .form-group { margin-bottom: 14px; }
 .form-group label { display: block; font-size: 13px; font-weight: 500; color: #444; margin-bottom: 5px; }
-.form-group input, .form-group textarea { width: 100%; border: 1px solid #ddd; border-radius: 8px; padding: 10px 12px; font-size: 14px; font-family: inherit; outline: none; }
-.form-group input:focus, .form-group textarea:focus { border-color: #1D9E75; }
+.form-group input, .form-group textarea, .form-group select { width: 100%; border: 1px solid #ddd; border-radius: 8px; padding: 10px 12px; font-size: 14px; font-family: inherit; outline: none; background: #fff; }
+.form-group input:focus, .form-group textarea:focus, .form-group select:focus { border-color: #1D9E75; }
 .checkbox-group label { display: flex; align-items: center; gap: 8px; font-size: 14px; color: #333; }
 .field-hint { font-size: 12px; color: #888; display: block; margin-top: 4px; }
 .link-btn { background: none; border: none; color: #1D9E75; font-size: 12px; cursor: pointer; padding: 0; }
@@ -261,14 +267,15 @@ img { max-width: 100%; display: block; }
 .delete-item-btn:hover { color: #E24B4A; }
 .menu-empty { text-align: center; padding: 32px; color: #888; font-size: 14px; }
 .add-item-form { padding: 14px; background: #f9f9f9; border-top: 1px solid #eee; }
-.add-item-row { margin-bottom: 10px; }
+.add-item-photo-row { display: flex; gap: 12px; margin-bottom: 12px; }
+.add-item-photo-btn { width: 90px; min-height: 90px; border: 2px dashed #ddd; border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; font-size: 12px; color: #aaa; text-align: center; flex-shrink: 0; overflow: hidden; }
+.add-item-photo-btn small { font-size: 10px; opacity: 0.7; }
+.item-photo-preview { width: 90px; height: 90px; object-fit: cover; }
+.add-item-fields { flex: 1; display: flex; flex-direction: column; gap: 8px; }
 .veg-toggle { display: flex; gap: 8px; }
 .veg-btn { font-size: 12px; padding: 5px 12px; border-radius: 20px; border: 1px solid #ddd; background: #fff; color: #555; }
 .veg-btn.veg { background: #EAF3DE; color: #3B6D11; border-color: #3B6D11; }
 .veg-btn.nonveg { background: #FCEBEB; color: #A32D2D; border-color: #A32D2D; }
-.add-item-fields { display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px; }
-.add-item-fields input { border: 1px solid #ddd; border-radius: 8px; padding: 8px 12px; font-size: 14px; outline: none; }
-.add-item-fields input:focus { border-color: #1D9E75; }
 .dietary-flags-row { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
 .flag-btn { font-size: 11px; padding: 3px 10px; border-radius: 20px; border: 1px solid #ddd; background: #fff; color: #555; }
 .flag-btn.selected { background: #1D9E75; color: #fff; border-color: #1D9E75; }
@@ -278,6 +285,12 @@ img { max-width: 100%; display: block; }
 /* ── Offers ───────────────────────────────────────────────────── */
 .offer-form { background: #f9f9f9; border: 1px solid #eee; border-radius: 10px; padding: 16px; margin-bottom: 20px; }
 .offer-form h2 { font-size: 15px; font-weight: 600; margin-bottom: 14px; }
+.offer-poster-upload { display: block; cursor: pointer; border: 2px dashed #ddd; border-radius: 10px; overflow: hidden; }
+.offer-poster-placeholder { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; padding: 24px; color: #aaa; font-size: 13px; }
+.offer-poster-placeholder span:first-child { font-size: 28px; }
+.offer-poster-preview { width: 100%; max-height: 200px; object-fit: cover; display: block; }
+.offer-card-poster { width: 100%; max-height: 160px; object-fit: cover; border-radius: 8px; margin-bottom: 10px; }
+.remove-poster-btn { font-size: 12px; color: #E24B4A; background: none; border: none; padding: 4px 0; cursor: pointer; margin-top: 4px; }
 .form-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 4px; }
 .form-actions button { font-size: 13px; padding: 7px 14px; border-radius: 8px; border: 1px solid #ddd; background: #fff; }
 .offers-empty { text-align: center; padding: 32px; color: #888; font-size: 14px; }
@@ -292,6 +305,16 @@ img { max-width: 100%; display: block; }
 .offer-card-title { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
 .offer-card-body { font-size: 13px; color: #555; line-height: 1.5; margin-bottom: 8px; }
 .offer-card-expiry { font-size: 12px; color: #888; }
+
+/* ── Offer popup ──────────────────────────────────────────────── */
+.offer-popup-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; z-index: 200; padding: 16px; }
+.offer-popup { background: #fff; border-radius: 16px; overflow: hidden; max-width: 400px; width: 100%; position: relative; }
+.offer-popup-close { position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.4); color: #fff; border: none; border-radius: 50%; width: 30px; height: 30px; font-size: 14px; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 1; }
+.offer-popup-img { width: 100%; max-height: 240px; object-fit: cover; display: block; }
+.offer-popup-body { padding: 16px; }
+.offer-popup-body h3 { font-size: 17px; font-weight: 700; margin-bottom: 6px; }
+.offer-popup-body p { font-size: 13px; color: #555; line-height: 1.5; }
+.offer-popup-expiry { font-size: 12px; color: #888; margin-top: 8px; }
 
 /* ── Navbar ───────────────────────────────────────────────────── */
 .navbar { display: flex; align-items: center; justify-content: space-between; padding: 0 24px; height: 52px; background: #fff; border-bottom: 1px solid #eee; position: sticky; top: 0; z-index: 50; }
@@ -325,6 +348,7 @@ img { max-width: 100%; display: block; }
 .seller-type-toggle { display: flex; flex-direction: column; gap: 8px; }
 .type-toggle-btn { padding: 10px 14px; border: 1px solid #ddd; border-radius: 8px; background: #fff; font-size: 14px; color: #555; text-align: left; cursor: pointer; }
 .type-toggle-btn.active { border-color: #1D9E75; background: #f0faf6; color: #1D9E75; font-weight: 500; }
+
 /* ── Onboarding ───────────────────────────────────────────────── */
 .onboarding-container { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: #f5f5f5; padding: 24px; }
 .onboarding-card { background: #fff; border-radius: 16px; padding: 32px; width: 100%; max-width: 480px; box-shadow: 0 4px 24px rgba(0,0,0,0.06); }
@@ -345,10 +369,6 @@ img { max-width: 100%; display: block; }
 .type-card strong { font-size: 15px; color: #1a1a1a; }
 .type-card span { font-size: 13px; color: #888; }
 .type-icon { font-size: 24px; }
-.form-group { display: flex; flex-direction: column; gap: 5px; }
-.form-group label { font-size: 13px; font-weight: 500; color: #444; }
-.form-group input, .form-group textarea { border: 1px solid #ddd; border-radius: 8px; padding: 10px 12px; font-size: 14px; font-family: inherit; outline: none; }
-.form-group input:focus, .form-group textarea:focus { border-color: #1D9E75; }
 .hint { font-size: 12px; color: #888; }
 .tag-grid { display: flex; flex-wrap: wrap; gap: 8px; }
 .tag { background: #f5f5f5; border: 1px solid #eee; border-radius: 20px; padding: 5px 12px; font-size: 13px; color: #555; cursor: pointer; }
@@ -371,7 +391,6 @@ img { max-width: 100%; display: block; }
 .btn-primary:disabled { opacity: 0.6; }
 .btn-secondary { background: #f5f5f5; color: #555; border: 1px solid #eee; border-radius: 10px; padding: 12px 20px; font-size: 15px; cursor: pointer; }
 .error-msg { color: #A32D2D; font-size: 13px; background: #FCEBEB; padding: 8px 12px; border-radius: 8px; }
-/* ── Hours selector ───────────────────────────────────────────── */
 .days-grid { display: flex; flex-wrap: wrap; gap: 8px; }
 .day-btn { padding: 6px 12px; border-radius: 20px; border: 1px solid #ddd; background: #fff; font-size: 13px; color: #555; cursor: pointer; }
 .day-btn.selected { background: #1D9E75; color: #fff; border-color: #1D9E75; }

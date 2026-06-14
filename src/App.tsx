@@ -12,7 +12,7 @@ import SellerGallery from './pages/seller/SellerGallery'
 import SellerMenuEdit from './pages/seller/SellerMenuEdit'
 import SellerOffers from './pages/seller/SellerOffers'
 import AdminSellerApproval from './pages/admin/AdminSellerApproval'
-
+import './dishcovery.css'
 
 function RootRedirect() {
   const { user, role, seller, loading } = useAuth()
@@ -35,13 +35,15 @@ function AppRoutes() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup" element={<SignupPage />} />
         <Route path="/browse" element={<BrowsePage />} />
-        <Route path="/seller/:sellerId" element={<SellerProfilePage />} />
+        {/* Specific seller routes BEFORE the :sellerId wildcard */}
         <Route path="/seller/onboarding" element={<SellerOnboarding />} />
         <Route path="/seller/dashboard" element={<SellerDashboard />} />
         <Route path="/seller/profile" element={<SellerProfileEdit />} />
         <Route path="/seller/gallery" element={<SellerGallery />} />
         <Route path="/seller/menu" element={<SellerMenuEdit />} />
         <Route path="/seller/offers" element={<SellerOffers />} />
+        {/* Public seller profile - MUST be last seller route */}
+        <Route path="/seller/:sellerId" element={<SellerProfilePage />} />
         <Route path="/admin/sellers" element={<AdminSellerApproval />} />
         <Route path="*" element={<Navigate to="/browse" replace />} />
       </Routes>

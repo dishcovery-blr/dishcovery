@@ -23,7 +23,7 @@ export default function LandingPage() {
           <img src="/logo.png" alt="Dishcovery" className="landing-logo" />
         </div>
         <h1 className="landing-headline">
-          Discover home kitchens<br />near you in Bangalore
+          Discover home kitchens<br />near you
         </h1>
         <p className="landing-sub">
           Order directly from home bakers, home cooks and cloud kitchens. No commissions. Pure food.
@@ -77,7 +77,7 @@ export default function LandingPage() {
           <div className="landing-why-card">
             <span>📍</span>
             <h3>Hyperlocal</h3>
-            <p>Bangalore-first. Find home kitchens in your neighbourhood.</p>
+            <p>Find home kitchens in your neighbourhood.</p>
           </div>
         </div>
       </div>
@@ -85,7 +85,7 @@ export default function LandingPage() {
       {/* For sellers */}
       <div className="landing-seller-cta">
         <h2>Are you a home baker or cook?</h2>
-        <p>Get discovered by thousands of food lovers in Bangalore. List your kitchen free for 30 days.</p>
+        <p>Get discovered by thousands of food lovers near you. List your kitchen free for 30 days.</p>
         <button className="landing-btn-primary" onClick={() => navigate('/signup')}>
           Start your free listing
         </button>
@@ -94,7 +94,7 @@ export default function LandingPage() {
       {/* Footer */}
       <div className="landing-footer">
         <img src="/logo.png" alt="Dishcovery" className="landing-footer-logo" />
-        <p>Bangalore's home kitchen discovery platform</p>
+        <p>Your home kitchen discovery platform</p>
         <div className="landing-footer-links">
           <button onClick={() => navigate('/login')}>Sign in</button>
           <button onClick={() => navigate('/signup')}>Create account</button>

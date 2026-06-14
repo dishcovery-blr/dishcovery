@@ -59,7 +59,7 @@ export default function BrowsePage() {
     <div className="browse-page">
       <div className="browse-header">
         <h1 className="browse-title">Discover home kitchens near you</h1>
-        <p className="browse-subtitle">Bangalore's home bakers, cooks, and cloud kitchens</p>
+        <p className="browse-subtitle">Home bakers, cooks, and cloud kitchens near you</p>
       </div>
 
       {/* Search */}

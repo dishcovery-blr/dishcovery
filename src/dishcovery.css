@@ -458,3 +458,48 @@ img { max-width: 100%; display: block; }
 .navbar-logo-img { height: 32px; width: auto; }
 .auth-logo { display: flex; justify-content: center; margin-bottom: 20px; }
 .auth-logo-img { height: 80px; width: auto; }
+/* ── Landing page ─────────────────────────────────────────────── */
+.landing-page { max-width: 600px; margin: 0 auto; background: #fff; }
+
+/* Hero */
+.landing-hero { background: linear-gradient(160deg, #085041 0%, #1D9E75 100%); padding: 48px 24px 56px; text-align: center; }
+.landing-logo-wrap { margin-bottom: 24px; }
+.landing-logo { height: 72px; width: auto; margin: 0 auto; }
+.landing-headline { font-size: 28px; font-weight: 800; color: #fff; line-height: 1.25; margin-bottom: 12px; }
+.landing-sub { font-size: 15px; color: rgba(255,255,255,0.85); line-height: 1.6; margin-bottom: 28px; }
+.landing-ctas { display: flex; flex-direction: column; gap: 12px; max-width: 320px; margin: 0 auto; }
+.landing-btn-primary { background: #fff; color: #085041; border: none; border-radius: 12px; padding: 14px 24px; font-size: 16px; font-weight: 700; cursor: pointer; }
+.landing-btn-primary:hover { background: #f0faf6; }
+.landing-btn-secondary { background: rgba(255,255,255,0.15); color: #fff; border: 2px solid rgba(255,255,255,0.5); border-radius: 12px; padding: 14px 24px; font-size: 16px; font-weight: 600; cursor: pointer; }
+.landing-btn-secondary:hover { background: rgba(255,255,255,0.25); }
+
+/* Categories */
+.landing-categories { padding: 32px 24px; }
+.landing-categories h2 { font-size: 18px; font-weight: 700; margin-bottom: 16px; }
+.landing-cat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+.landing-cat-item { background: #f9f9f9; border: 1px solid #eee; border-radius: 12px; padding: 14px 8px; display: flex; flex-direction: column; align-items: center; gap: 6px; cursor: pointer; transition: box-shadow 0.15s; }
+.landing-cat-item:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+.landing-cat-emoji { font-size: 24px; }
+.landing-cat-label { font-size: 11px; color: #555; font-weight: 500; text-align: center; }
+
+/* Why section */
+.landing-why { padding: 32px 24px; background: #f9f9f9; }
+.landing-why h2 { font-size: 18px; font-weight: 700; margin-bottom: 16px; }
+.landing-why-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.landing-why-card { background: #fff; border-radius: 12px; padding: 16px; border: 1px solid #eee; }
+.landing-why-card span { font-size: 22px; display: block; margin-bottom: 8px; }
+.landing-why-card h3 { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+.landing-why-card p { font-size: 12px; color: #666; line-height: 1.5; }
+
+/* Seller CTA */
+.landing-seller-cta { padding: 40px 24px; text-align: center; background: #EAF3DE; }
+.landing-seller-cta h2 { font-size: 20px; font-weight: 700; margin-bottom: 10px; }
+.landing-seller-cta p { font-size: 14px; color: #555; line-height: 1.6; margin-bottom: 20px; }
+.landing-seller-cta .landing-btn-primary { background: #1D9E75; color: #fff; display: inline-block; }
+
+/* Footer */
+.landing-footer { padding: 32px 24px; text-align: center; border-top: 1px solid #eee; }
+.landing-footer-logo { height: 40px; width: auto; margin: 0 auto 10px; }
+.landing-footer p { font-size: 13px; color: #888; margin-bottom: 16px; }
+.landing-footer-links { display: flex; justify-content: center; gap: 20px; }
+.landing-footer-links button { background: none; border: none; font-size: 13px; color: #1D9E75; cursor: pointer; }

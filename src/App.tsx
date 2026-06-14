@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider, useAuth } from './context/AuthContext'
 import Navbar from './components/Navbar'
+import LandingPage from './pages/LandingPage'
 import LoginPage from './pages/LoginPage'
 import SignupPage from './pages/SignupPage'
 import BrowsePage from './pages/consumer/BrowsePage'
@@ -20,7 +21,7 @@ import './dishcovery.css'
 function RootRedirect() {
   const { user, role, seller, loading } = useAuth()
   if (loading) return <div className="page-loading">Loading…</div>
-  if (!user) return <Navigate to="/browse" replace />
+  if (!user) return <Navigate to="/" replace />
   if (role === 'admin') return <Navigate to="/admin" replace />
   if (role === 'seller') {
     if (!seller) return <Navigate to="/seller/onboarding" replace />
@@ -30,11 +31,46 @@ function RootRedirect() {
 }
 
 function AppRoutes() {
+  const { user, loading } = useAuth()
+  if (loading) return <div className="page-loading">Loading…</div>
+
   return (
     <>
       <Navbar />
       <Routes>
-        <Route path="/" element={<RootRedirect />} />
+        {/* Public routes - no login needed */}
+        <Route path="/" element={!user ? <LandingPage /> : <RootRedirect />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/signup" element={<SignupPage />} />
+
+        {/* Protected routes - login required */}
+        <Route path="/browse" element={user ? <BrowsePage /> : <Navigate to="/" replace />} />
+        <Route path="/seller/onboarding" element={user ? <SellerOnboarding /> : <Navigate to="/" replace />} />
+        <Route path="/seller/dashboard" element={user ? <SellerDashboard /> : <Navigate to="/" replace />} />
+        <Route path="/seller/profile" element={user ? <SellerProfileEdit /> : <Navigate to="/" replace />} />
+        <Route path="/seller/gallery" element={user ? <SellerGallery /> : <Navigate to="/" replace />} />
+        <Route path="/seller/menu" element={user ? <SellerMenuEdit /> : <Navigate to="/" replace />} />
+        <Route path="/seller/offers" element={user ? <SellerOffers /> : <Navigate to="/" replace />} />
+        <Route path="/seller/:sellerId" element={user ? <SellerProfilePage /> : <Navigate to="/" replace />} />
+        <Route path="/admin" element={user ? <AdminDashboard /> : <Navigate to="/" replace />} />
+        <Route path="/admin/sellers" element={user ? <AdminSellers /> : <Navigate to="/" replace />} />
+        <Route path="/admin/fssai" element={user ? <AdminFssai /> : <Navigate to="/" replace />} />
+        <Route path="/admin/consumers" element={user ? <AdminConsumers /> : <Navigate to="/" replace />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </>
+  )
+}
+
+function AppRoutes() {
+  const { user, loading } = useAuth()
+  if (loading) return <div className="page-loading">Loading…</div>
+
+  return (
+    <>
+      <Navbar />
+      <Routes>
+        <Route path="/" element={user ? <RootRedirect /> : <LandingPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup" element={<SignupPage />} />
         <Route path="/browse" element={<BrowsePage />} />
@@ -49,7 +85,7 @@ function AppRoutes() {
         <Route path="/admin/sellers" element={<AdminSellers />} />
         <Route path="/admin/fssai" element={<AdminFssai />} />
         <Route path="/admin/consumers" element={<AdminConsumers />} />
-        <Route path="*" element={<Navigate to="/browse" replace />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </>
   )

@@ -11,20 +11,22 @@ export default function LoginPage() {
   const [error, setError] = useState('')
 
   async function handleLogin() {
-    setLoading(true)
-    setError('')
-    const { error: err } = await signIn(form.email, form.password)
-    if (err) {
-      setError(err.message)
-      setLoading(false)
-    }
-    // AuthContext will update and RootRedirect will handle navigation
+  setLoading(true)
+  setError('')
+  const { error: err } = await signIn(form.email, form.password)
+  if (err) {
+    setError(err.message)
+    setLoading(false)
+  } else {
+    // Force redirect based on role
+    window.location.href = '/'
   }
+}
 
   return (
     <div className="auth-page">
       <div className="auth-card">
-        <div className="auth-logo">🍽 Dishcovery</div>
+        <div className="auth-logo"><img src="/src/assets/logo.png" alt="Dishcovery" className="auth-logo-img" /></div>
         <h1 className="auth-title">Welcome back</h1>
         <p className="auth-subtitle">Sign in to your account</p>
 

@@ -7,10 +7,7 @@ export default function Navbar() {
   const navigate = useNavigate()
   const location = useLocation()
 
-  // Hide navbar on auth pages
-  if (['/login', '/signup'].includes(location.pathname)) return null
-  // Hide on seller onboarding
-  if (location.pathname === '/seller/onboarding') return null
+  if (['/login', '/signup', '/seller/onboarding'].includes(location.pathname)) return null
 
   async function handleSignOut() {
     await signOut()
@@ -19,8 +16,8 @@ export default function Navbar() {
 
   return (
     <nav className="navbar">
-      <button className="navbar-logo" onClick={() => navigate('/browse')}>
-        🍽 Dishcovery
+      <button className="navbar-logo" onClick={() => navigate(role === 'admin' ? '/admin' : role === 'seller' ? '/seller/dashboard' : '/browse')}>
+        <img src="/src/assets/logo.png" alt="Dishcovery" className="navbar-logo-img" />
       </button>
 
       <div className="navbar-right">
@@ -29,6 +26,14 @@ export default function Navbar() {
             <button className="navbar-link" onClick={() => navigate('/browse')}>Browse</button>
             <button className="navbar-btn-outline" onClick={() => navigate('/login')}>Sign in</button>
             <button className="navbar-btn" onClick={() => navigate('/signup')}>List your kitchen</button>
+          </>
+        ) : role === 'admin' ? (
+          <>
+            <button className="navbar-link" onClick={() => navigate('/admin')}>Overview</button>
+            <button className="navbar-link" onClick={() => navigate('/admin/sellers')}>Sellers</button>
+            <button className="navbar-link" onClick={() => navigate('/admin/fssai')}>FSSAI</button>
+            <button className="navbar-link" onClick={() => navigate('/admin/consumers')}>Consumers</button>
+            <button className="navbar-btn-outline" onClick={handleSignOut}>Sign out</button>
           </>
         ) : role === 'seller' ? (
           <>
@@ -39,11 +44,6 @@ export default function Navbar() {
                 My listing ↗
               </a>
             )}
-            <button className="navbar-btn-outline" onClick={handleSignOut}>Sign out</button>
-          </>
-        ) : role === 'admin' ? (
-          <>
-            <button className="navbar-link" onClick={() => navigate('/admin/sellers')}>Admin</button>
             <button className="navbar-btn-outline" onClick={handleSignOut}>Sign out</button>
           </>
         ) : (

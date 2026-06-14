@@ -33,7 +33,7 @@ export default function SignupPage() {
     return (
       <div className="auth-page">
         <div className="auth-card">
-          <div className="auth-logo">🍽 Dishcovery</div>
+          <div className="auth-logo"><img src="/src/assets/logo.png" alt="Dishcovery" className="auth-logo-img" /></div>
           <h1 className="auth-title">Check your email</h1>
           <p className="auth-subtitle">
             We've sent a confirmation link to <strong>{form.email}</strong>.

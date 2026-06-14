@@ -34,24 +34,42 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true)
 
   async function loadProfile(currentUser: User) {
+    console.log('loadProfile start', currentUser.id)
     const userRole = getUserRole(currentUser) as UserRole
+    console.log('role detected:', userRole)
+    console.log('raw metadata:', currentUser.user_metadata)
     setRole(userRole)
 
+    if (userRole === 'admin') {
+      console.log('admin detected - done')
+      setLoading(false)
+      return
+    }
+
     if (userRole === 'seller') {
-      const { data } = await supabase
+      console.log('fetching seller...')
+      const { data, error } = await supabase
         .from('sellers')
         .select('*')
         .eq('auth_user_id', currentUser.id)
         .single()
+      console.log('seller result:', data, error)
       setSeller(data)
     } else if (userRole === 'consumer') {
-      const { data } = await supabase
+      console.log('fetching consumer...')
+      const { data, error } = await supabase
         .from('consumers')
         .select('*')
         .eq('auth_user_id', currentUser.id)
         .single()
+      console.log('consumer result:', data, error)
       setConsumer(data)
+    } else {
+      console.log('no role matched - role was:', userRole)
     }
+
+    console.log('loadProfile end')
+    setLoading(false)
   }
 
   async function refreshSeller() {
@@ -77,12 +95,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (_event, session) => {
+        console.log('auth state change:', _event)
         setSession(session)
         setUser(session?.user ?? null)
         setSeller(null)
         setConsumer(null)
         if (session?.user) {
           await loadProfile(session.user)
+        } else {
+          setLoading(false)
         }
       }
     )

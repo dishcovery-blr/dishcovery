@@ -138,12 +138,11 @@ export default function SignupPage() {
               onClick={handleSignup}
               disabled={loading || !form.email || !form.password || !form.display_name}
             >
-              <p style={{ fontSize: 12, color: '#888', textAlign: 'center', marginTop: 8 }}>
-  By creating an account you agree to our <Link to="/terms" style={{ color: '#1D9E75' }}>Terms & Conditions</Link>
-</p>
               {loading ? 'Creating account…' : 'Create account'}
             </button>
-
+<p style={{ fontSize: 12, color: '#888', textAlign: 'center', marginTop: 8 }}>
+  By creating an account you agree to our <Link to="/terms" style={{ color: '#1D9E75' }}>Terms & Conditions</Link>
+</p>
             <button className="auth-back-btn" onClick={() => setAccountType(null)}>← Back</button>
 
             <div className="auth-links">

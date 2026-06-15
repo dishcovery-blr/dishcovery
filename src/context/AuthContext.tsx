@@ -34,41 +34,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true)
 
   async function loadProfile(currentUser: User) {
-    console.log('loadProfile start', currentUser.id)
     const userRole = getUserRole(currentUser) as UserRole
-    console.log('role detected:', userRole)
-    console.log('raw metadata:', currentUser.user_metadata)
     setRole(userRole)
 
     if (userRole === 'admin') {
-      console.log('admin detected - done')
       setLoading(false)
       return
     }
 
     if (userRole === 'seller') {
-      console.log('fetching seller...')
-      const { data, error } = await supabase
+      const { data } = await supabase
         .from('sellers')
         .select('*')
         .eq('auth_user_id', currentUser.id)
         .single()
-      console.log('seller result:', data, error)
       setSeller(data)
     } else if (userRole === 'consumer') {
-      console.log('fetching consumer...')
-      const { data, error } = await supabase
+      const { data } = await supabase
         .from('consumers')
         .select('*')
         .eq('auth_user_id', currentUser.id)
         .single()
-      console.log('consumer result:', data, error)
       setConsumer(data)
-    } else {
-      console.log('no role matched - role was:', userRole)
     }
 
-    console.log('loadProfile end')
     setLoading(false)
   }
 
@@ -83,42 +72,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   useEffect(() => {
-  const timeout = setTimeout(() => setLoading(false), 5000)
-  
-  supabase.auth.getSession().then(({ data: { session } }) => {
-    clearTimeout(timeout)
-    setSession(session)
-    setUser(session?.user ?? null)
-    if (session?.user) {
-      loadProfile(session.user).finally(() => setLoading(false))
-    } else {
-      setLoading(false)
-    }
-  })
+    const timeout = setTimeout(() => setLoading(false), 5000)
 
-  const { data: { subscription } } = supabase.auth.onAuthStateChange(
-    async (_event, session) => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      clearTimeout(timeout)
       setSession(session)
       setUser(session?.user ?? null)
-      setSeller(null)
-      setConsumer(null)
       if (session?.user) {
-        await loadProfile(session.user)
+        loadProfile(session.user).finally(() => setLoading(false))
       } else {
         setLoading(false)
       }
-    }
-  )
-
-  return () => {
-    subscription.unsubscribe()
-    clearTimeout(timeout)
-  }
-}, [])
+    })
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (_event, session) => {
-        console.log('auth state change:', _event)
         setSession(session)
         setUser(session?.user ?? null)
         setSeller(null)
@@ -131,7 +99,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     )
 
-    return () => subscription.unsubscribe()
+    return () => {
+      subscription.unsubscribe()
+      clearTimeout(timeout)
+    }
   }, [])
 
   return (

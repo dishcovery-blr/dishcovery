@@ -33,9 +33,11 @@ export default function SignupPage() {
     return (
       <div className="auth-page">
         <div className="auth-card">
-          <div className="auth-logo"><img src="/logo.png" alt="Dishcovery" className="auth-logo-img" /></div>
-          <h1 className="auth-title">Check your email</h1>
-          <p className="auth-subtitle">
+          <div className="auth-logo" style={{ textAlign: 'center' }}>
+            <img src="/logo.png" alt="Dishcovery" className="auth-logo-img" />
+          </div>
+          <h1 className="auth-title" style={{ textAlign: 'center' }}>Check your email</h1>
+          <p className="auth-subtitle" style={{ textAlign: 'center' }}>
             We've sent a confirmation link to <strong>{form.email}</strong>.
             Click it to verify your account and then sign in.
           </p>
@@ -50,12 +52,18 @@ export default function SignupPage() {
   return (
     <div className="auth-page">
       <div className="auth-card">
-        <div className="auth-logo">🍽 Dishcovery</div>
-        <h1 className="auth-title">Create account</h1>
+
+        {/* Logo */}
+        <div style={{ textAlign: 'center', marginBottom: 24 }}>
+          <img src="/logo.png" alt="Dishcovery" className="auth-logo-img" />
+        </div>
+
+        {/* Title */}
+        <h1 className="auth-title" style={{ textAlign: 'center' }}>Create account</h1>
 
         {!accountType ? (
           <>
-            <p className="auth-subtitle">I want to…</p>
+            <p className="auth-subtitle" style={{ textAlign: 'center' }}>I want to…</p>
             <div className="account-type-cards">
               <button className="account-type-card" onClick={() => setAccountType('seller')}>
                 <span className="account-type-icon">🧁</span>
@@ -75,7 +83,7 @@ export default function SignupPage() {
           </>
         ) : (
           <>
-            <p className="auth-subtitle">
+            <p className="auth-subtitle" style={{ textAlign: 'center' }}>
               {accountType === 'seller' ? 'List your kitchen on Dishcovery' : 'Discover home kitchens near you'}
             </p>
 
@@ -140,9 +148,12 @@ export default function SignupPage() {
             >
               {loading ? 'Creating account…' : 'Create account'}
             </button>
-<p style={{ fontSize: 12, color: '#888', textAlign: 'center', marginTop: 8 }}>
-  By creating an account you agree to our <Link to="/terms" style={{ color: '#1D9E75' }}>Terms & Conditions</Link>
-</p>
+
+            <p style={{ fontSize: 12, color: '#888', textAlign: 'center', marginTop: 12 }}>
+              By creating an account you agree to our{' '}
+              <Link to="/terms" style={{ color: '#1D9E75' }}>Terms & Conditions</Link>
+            </p>
+
             <button className="auth-back-btn" onClick={() => setAccountType(null)}>← Back</button>
 
             <div className="auth-links">

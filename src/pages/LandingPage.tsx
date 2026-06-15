@@ -39,22 +39,7 @@ export default function LandingPage() {
       </div>
 
       {/* Categories */}
-      <div className="landing-categories">
-        <h2>What are you craving?</h2>
-        <div className="landing-cat-grid">
-          {CATEGORIES.map(cat => (
-            <button
-              key={cat.label}
-              className="landing-cat-item"
-              onClick={() => navigate('/signup')}
-            >
-              <span className="landing-cat-emoji">{cat.emoji}</span>
-              <span className="landing-cat-label">{cat.label}</span>
-            </button>
-          ))}
-        </div>
-      </div>
-
+      
       {/* Why Dishcovery */}
       <div className="landing-why">
         <h2>Why Dishcovery?</h2>
@@ -83,13 +68,7 @@ export default function LandingPage() {
       </div>
 
       {/* For sellers */}
-      <div className="landing-seller-cta">
-        <h2>Are you a home baker or cook?</h2>
-        <p>Get discovered by thousands of food lovers near you. List your kitchen free for 30 days.</p>
-        <button className="landing-btn-primary" onClick={() => navigate('/signup')}>
-          Start your free listing
-        </button>
-      </div>
+      
 
       {/* Footer */}
       <div className="landing-footer">

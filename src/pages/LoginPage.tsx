@@ -58,7 +58,9 @@ export default function LoginPage() {
         <button className="auth-btn" onClick={handleLogin} disabled={loading || !form.email || !form.password}>
           {loading ? 'Signing in…' : 'Sign in'}
         </button>
-
+<div className="auth-links" style={{ marginTop: 8 }}>
+  <Link to="/forgot-password">Forgot password?</Link>
+</div>
         <div className="auth-links">
           <span>Don't have an account?</span>
           <Link to="/signup">Sign up</Link>

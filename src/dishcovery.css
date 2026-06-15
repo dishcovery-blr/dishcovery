@@ -1,6 +1,6 @@
 /* ── Reset & base ─────────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f5f5; color: #1a1a1a; }
+body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f5f5; color: #1a1a1a; }
 button { cursor: pointer; font-family: inherit; }
 a { text-decoration: none; color: inherit; }
 img { max-width: 100%; display: block; }
@@ -465,8 +465,8 @@ img { max-width: 100%; display: block; }
 .landing-hero { background: linear-gradient(160deg, #085041 0%, #1D9E75 100%); padding: 48px 24px 56px; text-align: center; }
 .landing-logo-wrap { margin-bottom: 24px; }
 .landing-logo { height: 160px; width: auto; margin: 0 auto; }
-.landing-headline { font-size: 28px; font-weight: 800; color: #fff; line-height: 1.25; margin-bottom: 12px; }
-.landing-sub { font-size: 15px; color: rgba(255,255,255,0.85); line-height: 1.6; margin-bottom: 28px; }
+.landing-headline { font-family: 'Playfair Display', serif; font-size: 32px; font-weight: 800; color: #fff; line-height: 1.2; margin-bottom: 12px; }
+.landing-sub { font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.9); line-height: 1.6; margin-bottom: 28px; letter-spacing: 0.15em; text-transform: uppercase; }
 .landing-ctas { display: flex; flex-direction: column; gap: 12px; max-width: 320px; margin: 0 auto; }
 .landing-btn-primary { background: #fff; color: #085041; border: none; border-radius: 12px; padding: 14px 24px; font-size: 16px; font-weight: 700; cursor: pointer; }
 .landing-btn-primary:hover { background: #f0faf6; }
@@ -503,3 +503,16 @@ img { max-width: 100%; display: block; }
 .landing-footer p { font-size: 13px; color: #888; margin-bottom: 16px; }
 .landing-footer-links { display: flex; justify-content: center; gap: 20px; }
 .landing-footer-links button { background: none; border: none; font-size: 13px; color: #1D9E75; cursor: pointer; }
+/* ── Terms page ───────────────────────────────────────────────── */
+.terms-page { max-width: 680px; margin: 0 auto; padding: 0 0 60px; }
+.terms-header { display: flex; align-items: center; justify-content: space-between; padding: 16px 24px; border-bottom: 1px solid #eee; }
+.terms-logo { height: 32px; width: auto; }
+.terms-content { padding: 32px 24px; }
+.terms-content h1 { font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 800; margin-bottom: 4px; }
+.terms-updated { font-size: 13px; color: #888; margin-bottom: 32px; }
+.terms-content section { margin-bottom: 28px; }
+.terms-content h2 { font-size: 16px; font-weight: 700; margin-bottom: 10px; color: #1a1a1a; }
+.terms-content p { font-size: 14px; color: #444; line-height: 1.7; margin-bottom: 10px; }
+.terms-content ul { padding-left: 20px; margin-bottom: 10px; }
+.terms-content ul li { font-size: 14px; color: #444; line-height: 1.7; margin-bottom: 4px; }
+.terms-content a { color: #1D9E75; }

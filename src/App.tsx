@@ -17,6 +17,9 @@ import AdminSellers from './pages/admin/AdminSellers'
 import AdminFssai from './pages/admin/AdminFssai'
 import AdminConsumers from './pages/admin/AdminConsumers'
 import './dishcovery.css'
+import ForgotPasswordPage from './pages/ForgotPasswordPage'
+import ResetPasswordPage from './pages/ResetPasswordPage'
+import TermsPage from './pages/TermsPage'
 
 function RootRedirect() {
   const { user, role, seller, loading } = useAuth()
@@ -53,6 +56,9 @@ function AppRoutes() {
         <Route path="/admin/sellers" element={user ? <AdminSellers /> : <Navigate to="/" replace />} />
         <Route path="/admin/fssai" element={user ? <AdminFssai /> : <Navigate to="/" replace />} />
         <Route path="/admin/consumers" element={user ? <AdminConsumers /> : <Navigate to="/" replace />} />
+        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+<Route path="/reset-password" element={<ResetPasswordPage />} />
+<Route path="/terms" element={<TermsPage />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </>

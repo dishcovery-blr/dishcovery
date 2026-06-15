@@ -23,11 +23,11 @@ export default function LandingPage() {
           <img src="/logo.png" alt="Dishcovery" className="landing-logo" />
         </div>
         <h1 className="landing-headline">
-          Discover home kitchens<br />near you
-        </h1>
-        <p className="landing-sub">
-          Order directly from home bakers, home cooks and cloud kitchens. No commissions. Pure food.
-        </p>
+  Your neighbourhood kitchens, discovered.
+</h1>
+<p className="landing-sub">
+  FIND. ORDER. INDULGE.
+</p>
         <div className="landing-ctas">
           <button className="landing-btn-primary" onClick={() => navigate('/signup')}>
             Create an account

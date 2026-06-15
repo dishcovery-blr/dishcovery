@@ -457,7 +457,7 @@ img { max-width: 100%; display: block; }
 .admin-consumer-date { font-size: 13px; color: #888; }
 .navbar-logo-img { height: 32px; width: auto; }
 .auth-logo { display: flex; justify-content: center; margin-bottom: 20px; }
-.auth-logo-img { height: 80px; width: auto; }
+.auth-logo-img { height: 120px; width: auto; display: block; margin: 0 auto; }
 /* ── Landing page ─────────────────────────────────────────────── */
 .landing-page { max-width: 600px; margin: 0 auto; background: #fff; }
 

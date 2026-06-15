@@ -516,3 +516,5 @@ img { max-width: 100%; display: block; }
 .terms-content ul { padding-left: 20px; margin-bottom: 10px; }
 .terms-content ul li { font-size: 14px; color: #444; line-height: 1.7; margin-bottom: 4px; }
 .terms-content a { color: #1D9E75; }
+.landing-features { display: flex; flex-direction: column; gap: 0; }
+.feature-img { width: 100%; display: block; }

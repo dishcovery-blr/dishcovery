@@ -41,31 +41,12 @@ export default function LandingPage() {
       {/* Categories */}
       
       {/* Why Dishcovery */}
-      <div className="landing-why">
-        <h2>Why Dishcovery?</h2>
-        <div className="landing-why-grid">
-          <div className="landing-why-card">
-            <span>💬</span>
-            <h3>Order directly</h3>
-            <p>Contact the kitchen directly on WhatsApp. No middlemen, no platform fees on your order.</p>
-          </div>
-          <div className="landing-why-card">
-            <span>✓</span>
-            <h3>Verified kitchens</h3>
-            <p>Every listing is reviewed by us. FSSAI registered kitchens are clearly marked.</p>
-          </div>
-          <div className="landing-why-card">
-            <span>🏷</span>
-            <h3>Live offers</h3>
-            <p>See real-time deals and limited-time offers from kitchens near you.</p>
-          </div>
-          <div className="landing-why-card">
-            <span>📍</span>
-            <h3>Hyperlocal</h3>
-            <p>Find home kitchens in your neighbourhood.</p>
-          </div>
-        </div>
-      </div>
+      <div className="landing-features">
+  <img src="/feature-order.png" alt="Order directly" className="feature-img" />
+  <img src="/feature-verified.png" alt="Verified kitchens" className="feature-img" />
+  <img src="/feature-offers.png" alt="Live offers" className="feature-img" />
+  <img src="/feature-hyperlocal.png" alt="Hyperlocal" className="feature-img" />
+</div>
 
       {/* For sellers */}
       

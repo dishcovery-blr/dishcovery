@@ -180,18 +180,6 @@ export default function SellerProfileEdit() {
               onChange={e => setForm({ ...form, bio: e.target.value })}
               placeholder="Tell customers what makes your food special…"
             />
-            <div className="emoji-picker">
-              {EMOJIS.map(emoji => (
-                <button
-                  key={emoji}
-                  className="emoji-btn"
-                  type="button"
-                  onClick={() => setForm({ ...form, bio: (form.bio ?? '') + emoji })}
-                >
-                  {emoji}
-                </button>
-              ))}
-            </div>
           </div>
           <div className="form-group checkbox-group">
             <label>

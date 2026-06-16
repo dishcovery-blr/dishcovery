@@ -73,7 +73,7 @@ export default function SellerOnboarding() {
         .insert({
           auth_user_id: user.id,
           seller_type: sellerType,
-          status: 'pending',
+          status: 'active_unverified',
           display_name: form.display_name,
           whatsapp_number: form.whatsapp_number,
           location_text: form.location_text,
@@ -192,11 +192,16 @@ export default function SellerOnboarding() {
             <div className="form-group">
   <label>Short bio</label>
   <textarea
-    placeholder="Tell customers what makes your food special…"
-    value={form.bio}
-    onChange={e => setForm({ ...form, bio: e.target.value })}
-    rows={3}
-  />
+  placeholder="Tell customers what makes your food special…"
+  value={form.bio}
+  onChange={e => e.target.value.length <= 200 && setForm({ ...form, bio: e.target.value })}
+  rows={3}
+  maxLength={200}
+/>
+<span className="field-hint" style={{ textAlign: 'right', display: 'block' }}>
+  {(form.bio ?? '').length}/200
+</span>
+</div>
 
             <div className="form-group">
               <label>What do you make?</label>

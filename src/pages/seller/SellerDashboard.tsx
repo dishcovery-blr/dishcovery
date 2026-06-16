@@ -46,9 +46,14 @@ export default function SellerDashboard() {
         </a>
       </div>
 
-      {seller.status === 'pending' && (
-        <div className="status-banner pending">⏳ Your profile is under review. We'll notify you within 24 hours.</div>
-      )}
+      {seller.status === 'active_unverified' && (
+  <div className="status-banner pending">
+    ⏳ Your listing is not yet visible to customers. Our team is verifying your FSSAI registration. You can set up your profile, gallery and menu in the meantime.
+  </div>
+)}
+{seller.status === 'pending' && (
+  <div className="status-banner pending">⏳ Your profile is under review.</div>
+)}
       {seller.status === 'rejected' && (
         <div className="status-banner rejected">✕ Your profile was not approved. Please update your details and resubmit.</div>
       )}

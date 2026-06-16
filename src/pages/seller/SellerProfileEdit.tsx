@@ -175,11 +175,15 @@ export default function SellerProfileEdit() {
           <div className="form-group">
             <label>Bio</label>
             <textarea
-              rows={4}
-              value={form.bio}
-              onChange={e => setForm({ ...form, bio: e.target.value })}
-              placeholder="Tell customers what makes your food special…"
-            />
+  placeholder="Tell customers what makes your food special…"
+  value={form.bio}
+  onChange={e => e.target.value.length <= 200 && setForm({ ...form, bio: e.target.value })}
+  rows={3}
+  maxLength={200}
+/>
+<span className="field-hint" style={{ textAlign: 'right', display: 'block' }}>
+  {(form.bio ?? '').length}/200
+</span>
           </div>
           <div className="form-group checkbox-group">
             <label>

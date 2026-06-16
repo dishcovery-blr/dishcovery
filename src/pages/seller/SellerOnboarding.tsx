@@ -197,19 +197,6 @@ export default function SellerOnboarding() {
     onChange={e => setForm({ ...form, bio: e.target.value })}
     rows={3}
   />
-  <div className="emoji-picker">
-    {['🧁','🎂','🍰','🍞','🥐','🍩','🍪','🍫','🍛','🍲','🥗','🍱','🫕','🥘','🍜','🌮','🫔','🥙','🍣','🫙','🌿','✨','🔥','⭐','🏠','👩‍🍳','👨‍🍳','❤️','🧡','💛','💚','💙','💜','🖤','🤍','🤎','💗','💓','💞','💕','💝','❤️‍🔥','💫','🌸','🌺','🌻','🍀','🌈'].map(emoji => (
-      <button
-        key={emoji}
-        className="emoji-btn"
-        type="button"
-        onClick={() => setForm({ ...form, bio: (form.bio ?? '') + emoji })}
-      >
-        {emoji}
-      </button>
-    ))}
-  </div>
-</div>
 
             <div className="form-group">
               <label>What do you make?</label>

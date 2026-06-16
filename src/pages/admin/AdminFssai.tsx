@@ -45,7 +45,11 @@ export default function AdminFssai() {
     <div className="admin-page">
       <h1 className="admin-page-title">FSSAI Verification</h1>
       <p style={{ color: '#888', fontSize: 14, marginBottom: 20 }}>
-        Verify each seller's FSSAI number on <a href="https://foscos.fssai.gov.in" target="_blank" rel="noopener noreferrer" style={{ color: '#1D9E75' }}>foscos.fssai.gov.in</a> before activating their listing.
+        Verify each seller's FSSAI number on{' '}
+        <a href="https://foscos.fssai.gov.in" target="_blank" rel="noopener noreferrer" style={{ color: '#1D9E75' }}>
+          foscos.fssai.gov.in
+        </a>{' '}
+        before activating their listing.
       </p>
 
       {sellers.length === 0 ? (
@@ -67,7 +71,7 @@ export default function AdminFssai() {
                     <div style={{ marginTop: 6, fontSize: 13 }}>
                       FSSAI: <strong>{seller.fssai_number}</strong>
                       
-                        href={`https://foscos.fssai.gov.in`}
+                        href="https://foscos.fssai.gov.in"
                         target="_blank"
                         rel="noopener noreferrer"
                         style={{ marginLeft: 8, color: '#1D9E75', fontSize: 12 }}

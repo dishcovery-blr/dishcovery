@@ -340,7 +340,7 @@ img { max-width: 100%; display: block; }
 .auth-browse-btn { display: block; text-align: center; color: #555; font-size: 14px; border: 1px solid #eee; border-radius: 10px; padding: 10px; }
 .auth-back-btn { width: 100%; background: none; border: none; color: #888; font-size: 13px; margin-top: 12px; cursor: pointer; }
 .account-type-cards { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
-.account-type-card { display: flex; flex-direction: column; align-items: flex-start; gap: 3px; padding: 14px 16px; border: 1px solid #eee; border-radius: 10px; background: #fff; cursor: pointer; text-align: left; transition: border-color 0.15s; }
+.account-type-card { display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 14px 16px; border: 1px solid #eee; border-radius: 10px; background: #fff; cursor: pointer; text-align: center; transition: border-color 0.15s; }
 .account-type-card:hover { border-color: #1D9E75; }
 .account-type-icon { font-size: 22px; }
 .account-type-card strong { font-size: 15px; color: #1a1a1a; }
@@ -518,3 +518,4 @@ img { max-width: 100%; display: block; }
 .terms-content a { color: #1D9E75; }
 .landing-features { display: flex; flex-direction: column; gap: 0; }
 .feature-img { width: 100%; display: block; }
+.auth-logo-img { height: 120px; width: auto; display: block; margin: 0 auto; mix-blend-mode: multiply; }

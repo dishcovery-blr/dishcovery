@@ -13,6 +13,7 @@ const DIETARY_OPTIONS = [
 ]
 const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
 const TIMES = ['6am','7am','8am','9am','10am','11am','12pm','1pm','2pm','3pm','4pm','5pm','6pm','7pm','8pm','9pm','10pm']
+const EMOJIS = ['🧁','🎂','🍰','🍞','🥐','🍩','🍪','🍫','🍛','🍲','🥗','🍱','🫕','🥘','🍜','🌮','🫔','🥙','🍣','🫙','🌿','✨','🔥','⭐','🏠','👩‍🍳','👨‍🍳','❤️','🧡','💛','💚','💙','💜','🖤','🤍','🤎','💗','💓','💞','💕','💝','❤️‍🔥','💫','🌸','🌺','🌻','🍀','🌈']
 
 export default function SellerProfileEdit() {
   const { seller, refreshSeller } = useAuth()
@@ -22,7 +23,6 @@ export default function SellerProfileEdit() {
   const [error, setError] = useState('')
   const [uploadingAvatar, setUploadingAvatar] = useState(false)
   const [uploadingCover, setUploadingCover] = useState(false)
-
   const [activeDays, setActiveDays] = useState<string[]>([])
   const [openTime, setOpenTime] = useState('9am')
   const [closeTime, setCloseTime] = useState('8pm')
@@ -55,13 +55,10 @@ export default function SellerProfileEdit() {
         accepts_custom_orders: seller.accepts_custom_orders ?? true,
         fssai_number: seller.fssai_number ?? '',
       })
-
-      // Parse existing hours string back to structured fields
       if (seller.operating_hours) {
         if (seller.operating_hours === 'TEMPORARILY_CLOSED') {
           setTemporarilyClosed(true)
         } else {
-          // Format: "Mon, Tue, Wed · 9am – 8pm"
           const parts = seller.operating_hours.split(' · ')
           if (parts.length === 2) {
             setActiveDays(parts[0].split(', '))
@@ -146,6 +143,7 @@ export default function SellerProfileEdit() {
 
       {error && <div className="editor-error">{error}</div>}
 
+      {/* Cover + Avatar */}
       <div className="cover-editor">
         <div className="cover-preview" style={{ backgroundImage: coverUrl ? `url(${coverUrl})` : undefined }}>
           {!coverUrl && <span>Cover photo</span>}
@@ -166,6 +164,8 @@ export default function SellerProfileEdit() {
       </div>
 
       <div className="editor-form" style={{ marginTop: 40 }}>
+
+        {/* Basic info */}
         <div className="form-section">
           <h2>Basic info</h2>
           <div className="form-group">
@@ -174,7 +174,24 @@ export default function SellerProfileEdit() {
           </div>
           <div className="form-group">
             <label>Bio</label>
-            <textarea rows={4} value={form.bio} onChange={e => setForm({ ...form, bio: e.target.value })} placeholder="Tell customers what makes your food special…" />
+            <textarea
+              rows={4}
+              value={form.bio}
+              onChange={e => setForm({ ...form, bio: e.target.value })}
+              placeholder="Tell customers what makes your food special…"
+            />
+            <div className="emoji-picker">
+              {EMOJIS.map(emoji => (
+                <button
+                  key={emoji}
+                  className="emoji-btn"
+                  type="button"
+                  onClick={() => setForm({ ...form, bio: (form.bio ?? '') + emoji })}
+                >
+                  {emoji}
+                </button>
+              ))}
+            </div>
           </div>
           <div className="form-group checkbox-group">
             <label>
@@ -184,21 +201,20 @@ export default function SellerProfileEdit() {
           </div>
         </div>
 
+        {/* Availability */}
         <div className="form-section">
           <h2>Availability</h2>
-
           <div className="form-group">
             <label className="checkbox-label" style={{ marginBottom: 12 }}>
               <input type="checkbox" checked={temporarilyClosed} onChange={e => setTemporarilyClosed(e.target.checked)} />
               <span>
                 <strong>Temporarily closed</strong>
                 <span style={{ display: 'block', fontSize: 12, color: '#888', fontWeight: 400 }}>
-                  Pause your listing without losing your profile. Customers will see you're temporarily unavailable.
+                  Pause your listing without losing your profile.
                 </span>
               </span>
             </label>
           </div>
-
           {!temporarilyClosed && (
             <>
               <div className="form-group">
@@ -215,7 +231,6 @@ export default function SellerProfileEdit() {
                   ))}
                 </div>
               </div>
-
               {activeDays.length > 0 && (
                 <div className="form-group">
                   <label>Operating hours</label>
@@ -228,15 +243,14 @@ export default function SellerProfileEdit() {
                       {TIMES.map(t => <option key={t} value={t}>{t}</option>)}
                     </select>
                   </div>
-                  {activeDays.length > 0 && (
-                    <span className="field-hint">Preview: {DAYS.filter(d => activeDays.includes(d)).join(', ')} · {openTime} – {closeTime}</span>
-                  )}
+                  <span className="field-hint">Preview: {DAYS.filter(d => activeDays.includes(d)).join(', ')} · {openTime} – {closeTime}</span>
                 </div>
               )}
             </>
           )}
         </div>
 
+        {/* Contact */}
         <div className="form-section">
           <h2>Contact</h2>
           <div className="form-group">
@@ -249,10 +263,11 @@ export default function SellerProfileEdit() {
           </div>
         </div>
 
+        {/* Location */}
         <div className="form-section">
           <h2>Location</h2>
           <div className="form-group">
-            <label>Area in Bangalore *</label>
+            <label>Your area *</label>
             <input type="text" value={form.location_text} onChange={e => setForm({ ...form, location_text: e.target.value })} placeholder="e.g. Indiranagar, HSR Layout" />
           </div>
           <div className="form-group">
@@ -261,6 +276,7 @@ export default function SellerProfileEdit() {
           </div>
         </div>
 
+        {/* Tags */}
         <div className="form-section">
           <h2>What do you make?</h2>
           <div className="tag-grid">
@@ -282,6 +298,7 @@ export default function SellerProfileEdit() {
           </div>
         </div>
 
+        {/* FSSAI */}
         <div className="form-section">
           <h2>FSSAI</h2>
           <div className="form-group">

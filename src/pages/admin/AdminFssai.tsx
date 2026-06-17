@@ -9,51 +9,27 @@ export default function AdminFssai() {
   useEffect(() => { loadSellers() }, [])
 
   async function loadSellers() {
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from('sellers')
       .select('*')
-      .eq('status', 'active_unverified')
       .order('created_at', { ascending: false })
-    setSellers(data ?? [])
+    const filtered = (data ?? []).filter((s: Seller) => s.status === 'active_unverified')
+    setSellers(filtered)
     setLoading(false)
   }
 
   async function verifyAndActivate(seller: Seller) {
-  await supabase.from('sellers').update({
-    fssai_status: 'verified',
-    status: 'approved',
-  }).eq('id', seller.id)
-
-  await supabase.from('admin_logs').insert({
-    action: 'fssai_verified_and_activated',
-    target_id: seller.id,
-    target_type: 'seller',
-  })
-
-  // Send activation email
-  await supabase.functions.invoke('send-email', {
-    body: {
-      to: seller.email ?? '',
-      subject: 'Your Dishcovery listing is now live! 🎉',
-      html: `
-        <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
-          <img src="https://dishcovering.com/logo.png" alt="Dishcovery" style="height: 60px; margin-bottom: 24px;" />
-          <h1 style="color: #085041;">You're live on Dishcovery!</h1>
-          <p>Hi ${seller.display_name},</p>
-          <p>Great news — your FSSAI registration has been verified and your listing is now live on Dishcovery. Customers can now find and contact you directly.</p>
-          <a href="https://dishcovering.com/seller/${seller.id}" style="display: inline-block; background: #1D9E75; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; margin: 16px 0;">View your listing</a>
-          <p>Make sure your profile, gallery and menu are complete to attract more customers.</p>
-          <p>The Dishcovery Team</p>
-        </div>
-      `,
-    },
-  })
-
-  setSellers(sellers.map(s => s.id === seller.id
-    ? { ...s, fssai_status: 'verified' as any, status: 'approved' as any }
-    : s
-  ))
-}
+    await supabase.from('sellers').update({ fssai_status: 'verified', status: 'approved' }).eq('id', seller.id)
+    await supabase.from('admin_logs').insert({ action: 'fssai_verified_and_activated', target_id: seller.id, target_type: 'seller' })
+    await supabase.functions.invoke('send-email', {
+      body: {
+        to: seller.email ?? '',
+        subject: 'Your Dishcovery listing is now live!',
+        html: `<div style="font-family:sans-serif;max-width:600px;margin:0 auto"><img src="https://dishcovering.com/logo.png" alt="Dishcovery" style="height:60px;margin-bottom:24px"/><h1 style="color:#085041">You are live on Dishcovery!</h1><p>Hi ${seller.display_name},</p><p>Your FSSAI registration has been verified and your listing is now live. Customers can find and contact you directly.</p><a href="https://dishcovering.com/seller/${seller.id}" style="display:inline-block;background:#1D9E75;color:white;padding:12px 24px;border-radius:8px;text-decoration:none;margin:16px 0">View your listing</a><p>The Dishcovery Team</p></div>`,
+      },
+    })
+    setSellers(sellers.filter(s => s.id !== seller.id))
+  }
 
   async function rejectFssai(seller: Seller) {
     await supabase.from('sellers').update({ fssai_status: 'not_submitted' }).eq('id', seller.id)
@@ -65,7 +41,9 @@ export default function AdminFssai() {
   return (
     <div className="admin-page">
       <h1 className="admin-page-title">FSSAI Verification</h1>
-      <p style={{ color: '#888', fontSize: 14, marginBottom: 20 }}>Verify each seller on foscos.fssai.gov.in before activating their listing.</p>
+      <p style={{ color: '#888', fontSize: 14, marginBottom: 20 }}>
+        Verify each seller on <a href="https://foscos.fssai.gov.in" target="_blank" rel="noopener noreferrer" style={{ color: '#1D9E75' }}>foscos.fssai.gov.in</a> before activating their listing.
+      </p>
       {sellers.length === 0 ? (
         <div className="admin-empty">No sellers pending FSSAI verification.</div>
       ) : (
@@ -89,7 +67,9 @@ export default function AdminFssai() {
                   ) : (
                     <div style={{ marginTop: 6, fontSize: 13, color: '#888' }}>No FSSAI number submitted yet</div>
                   )}
-                  <div style={{ fontSize: 12, color: '#888', marginTop: 4 }}>Grace deadline: {seller.fssai_grace_deadline ? new Date(seller.fssai_grace_deadline).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : '—'}</div>
+                  <div style={{ fontSize: 12, color: '#888', marginTop: 4 }}>
+                    Grace deadline: {seller.fssai_grace_deadline ? new Date(seller.fssai_grace_deadline).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : '—'}
+                  </div>
                 </div>
               </div>
               <div className="admin-seller-actions">

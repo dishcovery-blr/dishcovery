@@ -72,6 +72,7 @@ export default function SellerOnboarding() {
         .from('sellers')
         .insert({
           auth_user_id: user.id,
+  email: user.email,
           seller_type: sellerType,
           status: 'active_unverified',
           display_name: form.display_name,

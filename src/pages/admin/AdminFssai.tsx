@@ -19,10 +19,41 @@ export default function AdminFssai() {
   }
 
   async function verifyAndActivate(seller: Seller) {
-    await supabase.from('sellers').update({ fssai_status: 'verified', status: 'approved' }).eq('id', seller.id)
-    await supabase.from('admin_logs').insert({ action: 'fssai_verified_and_activated', target_id: seller.id, target_type: 'seller' })
-    setSellers(sellers.map(s => s.id === seller.id ? { ...s, fssai_status: 'verified' as any, status: 'approved' as any } : s))
-  }
+  await supabase.from('sellers').update({
+    fssai_status: 'verified',
+    status: 'approved',
+  }).eq('id', seller.id)
+
+  await supabase.from('admin_logs').insert({
+    action: 'fssai_verified_and_activated',
+    target_id: seller.id,
+    target_type: 'seller',
+  })
+
+  // Send activation email
+  await supabase.functions.invoke('send-email', {
+    body: {
+      to: seller.email ?? '',
+      subject: 'Your Dishcovery listing is now live! 🎉',
+      html: `
+        <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
+          <img src="https://dishcovering.com/logo.png" alt="Dishcovery" style="height: 60px; margin-bottom: 24px;" />
+          <h1 style="color: #085041;">You're live on Dishcovery!</h1>
+          <p>Hi ${seller.display_name},</p>
+          <p>Great news — your FSSAI registration has been verified and your listing is now live on Dishcovery. Customers can now find and contact you directly.</p>
+          <a href="https://dishcovering.com/seller/${seller.id}" style="display: inline-block; background: #1D9E75; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; margin: 16px 0;">View your listing</a>
+          <p>Make sure your profile, gallery and menu are complete to attract more customers.</p>
+          <p>The Dishcovery Team</p>
+        </div>
+      `,
+    },
+  })
+
+  setSellers(sellers.map(s => s.id === seller.id
+    ? { ...s, fssai_status: 'verified' as any, status: 'approved' as any }
+    : s
+  ))
+}
 
   async function rejectFssai(seller: Seller) {
     await supabase.from('sellers').update({ fssai_status: 'not_submitted' }).eq('id', seller.id)

@@ -33,12 +33,12 @@ export default function AdminDashboard() {
     setStats({
       totalSellers: sellerData.length,
       activeSellers: sellerData.filter(s => s.status === 'approved').length,
-      pendingSellers: sellerData.filter(s => s.status === 'pending').length,
+      pendingSellers: sellerData.filter(s => s.status === 'active_unverified').length,
       suspendedSellers: sellerData.filter(s => s.status === 'suspended').length,
       totalConsumers: consumers.count ?? 0,
       totalReviews: reviews.count ?? 0,
       totalWhatsappTaps: sellerData.reduce((sum, s) => sum + (s.whatsapp_taps ?? 0), 0),
-      fssaiPending: sellerData.filter(s => s.fssai_status === 'in_progress').length,
+      fssaiPending: sellerData.filter(s => s.status === 'active_unverified').length,
     })
     setLoading(false)
   }
@@ -89,7 +89,7 @@ export default function AdminDashboard() {
         <button className="admin-nav-card" onClick={() => navigate('/admin/sellers?filter=pending')}>
           <span className="admin-nav-icon">⏳</span>
           <strong>Pending approvals</strong>
-          <span>{stats?.pendingSellers} waiting</span>
+          <span>{stats?.pendingSellers} awaiting FSSAI verification</span>
         </button>
         <button className="admin-nav-card" onClick={() => navigate('/admin/sellers')}>
           <span className="admin-nav-icon">🏪</span>

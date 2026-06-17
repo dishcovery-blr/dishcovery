@@ -12,7 +12,7 @@ export default function AdminFssai() {
     const { data } = await supabase
       .from('sellers')
       .select('*')
-      .or('fssai_status.in.(in_progress,not_submitted),status.eq.active_unverified')
+      .eq('status', 'active_unverified')
       .order('created_at', { ascending: false })
     setSellers(data ?? [])
     setLoading(false)

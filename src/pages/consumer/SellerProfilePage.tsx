@@ -251,15 +251,17 @@ export default function SellerProfilePage() {
 
       {/* Tabs */}
       <div className="profile-tabs">
-        {(['about', 'gallery', 'menu', 'reviews'] as Tab[]).map(t => (
+        {(['about', 'menu', 'gallery', 'reviews'] as Tab[]).map(t => (
           <button key={t} className={`profile-tab ${tab === t ? 'active' : ''}`} onClick={() => setTab(t)}>
-            {t === 'reviews' ? `Reviews${reviews.length > 0 ? ` (${reviews.length})` : ''}` : t.charAt(0).toUpperCase() + t.slice(1)}
+            {t === 'about' ? 'Profile'
+              : t === 'reviews' ? `Reviews${reviews.length > 0 ? ` (${reviews.length})` : ''}`
+              : t.charAt(0).toUpperCase() + t.slice(1)}
           </button>
         ))}
       </div>
 
       <div className="profile-tab-content">
-        {tab === 'about' && <AboutTab seller={seller} isClosed={isClosed} getUrl={getUrl} />}
+        {tab === 'about' && <AboutTab seller={seller} isClosed={isClosed} getUrl={getUrl} onWhatsapp={handleWhatsappTap} />}
         {tab === 'gallery' && (
           <GalleryTab
             photos={seller.seller_photos ?? []}
@@ -288,11 +290,9 @@ export default function SellerProfilePage() {
           <ReviewsTab
             reviews={reviews}
             avgRating={avgRating}
-            seller={seller}
             consumer={consumer}
             role={role}
             myReview={myReview}
-            onWhatsapp={handleWhatsappTap}
             onSubmit={submitReview}
           />
         )}
@@ -313,8 +313,13 @@ export default function SellerProfilePage() {
   )
 }
 
-// ── About tab ──────────────────────────────────────────────────
-function AboutTab({ seller, isClosed, getUrl }: { seller: SellerFull; isClosed: boolean; getUrl: (p: string) => string }) {
+// ── About / Profile tab ────────────────────────────────────────
+function AboutTab({ seller, isClosed, getUrl, onWhatsapp }: {
+  seller: SellerFull
+  isClosed: boolean
+  getUrl: (p: string) => string
+  onWhatsapp: () => void
+}) {
   return (
     <div className="tab-about">
       {isClosed && <div className="closed-notice">🔴 This kitchen is temporarily closed. Check back soon!</div>}
@@ -341,6 +346,17 @@ function AboutTab({ seller, isClosed, getUrl }: { seller: SellerFull; isClosed: 
         <h2>Location</h2>
         <p>{seller.location_text ?? 'Bangalore'}</p>
         {seller.delivery_radius_km && <p className="delivery-note">Delivers within {seller.delivery_radius_km} km</p>}
+      </section>
+      <section className="contact-section">
+        <h2>Contact</h2>
+        <button className="contact-row whatsapp" onClick={onWhatsapp}>
+          <span className="contact-icon">💬</span><span>WhatsApp · {seller.whatsapp_number}</span>
+        </button>
+        {seller.instagram_url && (
+          <a className="contact-row" href={seller.instagram_url} target="_blank" rel="noopener noreferrer">
+            <span className="contact-icon">📸</span><span>Instagram</span>
+          </a>
+        )}
       </section>
     </div>
   )
@@ -503,14 +519,12 @@ function StarInput({ value, onChange }: { value: number; onChange: (n: number) =
 }
 
 // ── Reviews tab ────────────────────────────────────────────────
-function ReviewsTab({ reviews, avgRating, seller, consumer, role, myReview, onWhatsapp, onSubmit }: {
+function ReviewsTab({ reviews, avgRating, consumer, role, myReview, onSubmit }: {
   reviews: ReviewWithConsumer[]
   avgRating: number
-  seller: SellerFull
   consumer: Consumer | null
   role: string | null
   myReview: ReviewWithConsumer | undefined
-  onWhatsapp: () => void
   onSubmit: (rating: number, body: string, existingId?: string) => Promise<void>
 }) {
   const [filter, setFilter] = useState<ReviewFilter>('newest')
@@ -543,22 +557,6 @@ function ReviewsTab({ reviews, avgRating, seller, consumer, role, myReview, onWh
 
   return (
     <div className="tab-reviews">
-
-      {/* Contact */}
-      <section className="contact-section">
-        <h2>Contact</h2>
-        <button className="contact-row whatsapp" onClick={onWhatsapp}>
-          <span className="contact-icon">💬</span><span>WhatsApp · {seller.whatsapp_number}</span>
-        </button>
-        {seller.instagram_url && (
-          <a className="contact-row" href={seller.instagram_url} target="_blank" rel="noopener noreferrer">
-            <span className="contact-icon">📸</span><span>Instagram</span>
-          </a>
-        )}
-        <div className="contact-row">
-          <span className="contact-icon">📍</span><span>{seller.location_text ?? 'Bangalore'}</span>
-        </div>
-      </section>
 
       {/* Review form */}
       {showForm && (

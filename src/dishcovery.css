@@ -895,3 +895,33 @@ img { max-width: 100%; display: block; }
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+/* ── Seller profile hero (mindmap layout) ───────────────────── */
+.profile-hero {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 0 16px 12px;
+  margin-top: -28px;
+}
+
+.profile-hero-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.profile-bio-short {
+  font-size: 13px;
+  color: #555;
+  margin: 4px 0 0;
+  line-height: 1.4;
+}
+
+.profile-whatsapp-row {
+  padding: 0 16px 12px;
+}
+
+.profile-whatsapp-row .whatsapp-btn {
+  width: 100%;
+  justify-content: center;
+}

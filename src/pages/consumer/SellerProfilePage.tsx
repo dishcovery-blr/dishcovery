@@ -150,7 +150,6 @@ export default function SellerProfilePage() {
   if (loading) return <div className="page-loading">Loading…</div>
   if (!seller) return <div className="page-error">Seller not found.</div>
 
-  const activeOffers = seller.offers?.filter(o => o.is_active && new Date(o.expires_at) > new Date()) ?? []
   const isClosed = seller.operating_hours === 'TEMPORARILY_CLOSED'
   const cartTotal = cart.filter(i => i.type === 'menu').reduce((s, i) => s + i.price! * i.quantity, 0)
   const cartCount = cart.reduce((s, i) => s + i.quantity, 0)
@@ -187,67 +186,27 @@ export default function SellerProfilePage() {
         }
       </div>
 
-      {/* Avatar + WhatsApp */}
-      <div className="profile-avatar-row">
+      {/* Avatar + name + bio */}
+      <div className="profile-hero">
         <div className="profile-avatar">
           {seller.avatar_url
             ? <img src={getUrl(seller.avatar_url)} alt={seller.display_name} />
             : <span>{seller.display_name.charAt(0)}</span>
           }
         </div>
+        <div className="profile-hero-text">
+          <h1 className="profile-name">{seller.display_name}</h1>
+          {seller.bio && <p className="profile-bio-short">{seller.bio}</p>}
+        </div>
+      </div>
+
+      {/* WhatsApp button */}
+      <div className="profile-whatsapp-row">
         <button className="whatsapp-btn" onClick={handleWhatsappTap}>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
           {cart.length > 0 ? `Order on WhatsApp (${cartCount})` : 'Order on WhatsApp'}
         </button>
       </div>
-
-      {/* Meta */}
-      <div className="profile-meta">
-        <h1 className="profile-name">{seller.display_name}</h1>
-        <span className="seller-type-pill">{seller.seller_type === 'home_cook' ? 'Home Cook' : 'Baker'}</span>
-        {isClosed && <span className="closed-badge">Temporarily closed</span>}
-        <div className="profile-location">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
-          {seller.location_text ?? 'Bangalore'}
-          {seller.delivery_radius_km && ` · ${seller.delivery_radius_km} km delivery`}
-        </div>
-        <div className="profile-tags">
-          {seller.cuisine_tags?.map(t => <span key={t} className="profile-tag">{t}</span>)}
-          {seller.dietary_tags?.map(t => <span key={t} className="profile-tag dietary">{t}</span>)}
-          {seller.accepts_custom_orders && <span className="profile-tag custom">Custom orders</span>}
-        </div>
-      </div>
-
-      {/* Stats */}
-      <div className="profile-stats">
-        <div className="stat"><span className="stat-val">{avgRating > 0 ? avgRating : '—'}</span><span className="stat-label">Rating</span></div>
-        <div className="stat"><span className="stat-val">{reviews.length}</span><span className="stat-label">Reviews</span></div>
-        <div className="stat"><span className="stat-val">{seller.menu_items?.length ?? 0}</span><span className="stat-label">Menu items</span></div>
-        <div className="stat"><span className="stat-val">{seller.profile_views}</span><span className="stat-label">Views</span></div>
-      </div>
-
-      {/* FSSAI */}
-      <div className="profile-badges">
-        {seller.fssai_status === 'verified' && <div className="badge-fssai verified">✓ FSSAI verified · {seller.fssai_number}</div>}
-        {seller.fssai_status === 'in_progress' && <div className="badge-fssai pending">⏳ FSSAI registration in progress</div>}
-        {seller.fssai_status === 'not_submitted' && <div className="badge-fssai missing">⚠ FSSAI registration pending</div>}
-      </div>
-
-      {/* Active announcements */}
-      {activeOffers.length > 0 && (
-        <div className="active-offers">
-          {activeOffers.map(offer => (
-            <div key={offer.id} className="offer-banner">
-              {offer.photo_urls?.[0] && <img src={getUrl(offer.photo_urls[0])} alt={offer.title} className="offer-banner-img" />}
-              <div className="offer-banner-text">
-                <span className="offer-title">🏷 {offer.title}</span>
-                {offer.body && <span className="offer-body-preview">{offer.body}</span>}
-              </div>
-              <span className="offer-expiry">Expires {new Date(offer.expires_at).toLocaleDateString('en-IN', { weekday: 'short', hour: '2-digit', minute: '2-digit' })}</span>
-            </div>
-          ))}
-        </div>
-      )}
 
       {/* Tabs */}
       <div className="profile-tabs">

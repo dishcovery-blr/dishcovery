@@ -55,7 +55,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         .select('*')
         .eq('auth_user_id', currentUser.id)
         .single()
-      setConsumer(data)
+      if (data) {
+        setConsumer(data)
+      } else {
+        // Trigger may have failed during signup — create record now that we have a session
+        const display_name =
+          currentUser.user_metadata?.display_name ||
+          currentUser.email?.split('@')[0] ||
+          'User'
+        await supabase.from('consumers').insert({ auth_user_id: currentUser.id, display_name })
+        const { data: created } = await supabase
+          .from('consumers')
+          .select('*')
+          .eq('auth_user_id', currentUser.id)
+          .single()
+        setConsumer(created)
+      }
     }
 
     setLoading(false)

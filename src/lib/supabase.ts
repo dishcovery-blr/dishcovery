@@ -13,13 +13,27 @@ export async function signUpSeller(
   sellerType: 'baker' | 'home_cook',
   displayName: string
 ) {
-  return supabase.auth.signUp({
+  const result = await supabase.auth.signUp({
     email,
     password,
     options: {
       data: { role: 'seller', seller_type: sellerType, display_name: displayName },
     },
   })
+  if (!result.error) {
+    await supabase.functions.invoke('send-email', {
+      body: {
+        to: email,
+        subject: 'Welcome to Dishcovery!',
+        html: `<p>Hi ${displayName},</p>
+<p>Thanks for registering on Dishcovery. We've received your details and our team will review and approve your profile shortly.</p>
+<p>In the meantime, you can log in and start building your profile — add photos, set up your menu, and get ready to go live.</p>
+<p>We'll send you another email once you're approved.</p>
+<p>— The Dishcovery Team</p>`,
+      },
+    })
+  }
+  return result
 }
 
 export async function signUpConsumer(
@@ -27,13 +41,27 @@ export async function signUpConsumer(
   password: string,
   displayName: string
 ) {
-  return supabase.auth.signUp({
+  const result = await supabase.auth.signUp({
     email,
     password,
     options: {
       data: { role: 'consumer', display_name: displayName },
     },
   })
+  if (!result.error) {
+    await supabase.functions.invoke('send-email', {
+      body: {
+        to: email,
+        subject: 'Welcome to Dishcovery!',
+        html: `<p>Hi ${displayName},</p>
+<p>Welcome to Dishcovery! You're all set.</p>
+<p>Discover the best home bakers and cooks near you, browse menus, check out their work, and order directly on WhatsApp.</p>
+<p><a href="https://dishcovery.in">Start exploring →</a></p>
+<p>— The Dishcovery Team</p>`,
+      },
+    })
+  }
+  return result
 }
 
 export async function signIn(email: string, password: string) {

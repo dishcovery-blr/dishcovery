@@ -101,18 +101,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     })
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (_event, session) => {
+      async (event, session) => {
+        // INITIAL_SESSION is already handled by getSession() above — skip it to avoid
+        // two concurrent loadProfile calls racing each other on every page load.
+        if (event === 'INITIAL_SESSION') return
+
         setSession(session)
         setUser(session?.user ?? null)
-        if (!session?.user) {
+
+        if (event === 'SIGNED_OUT' || !session?.user) {
           setSeller(null)
           setConsumer(null)
           setRole(null)
           setLoading(false)
-        } else {
+          return
+        }
+
+        if (event === 'SIGNED_IN') {
           setLoading(true)
           await loadProfile(session.user)
         }
+        // TOKEN_REFRESHED / USER_UPDATED: session refs updated above, profile unchanged
       }
     )
 

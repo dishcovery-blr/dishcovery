@@ -5,6 +5,7 @@ import { supabase, createBoostOrder } from '../../lib/supabase'
 import type { Offer, OfferBoost } from '../../types/database'
 
 type OfferWithBoosts = Offer & { offer_boosts: OfferBoost[] }
+type FormTier = 'tier1' | 'browse_banner' | 'splash'
 
 const BOOST_PRICES: Record<string, number> = {
   browse_banner: 500,
@@ -17,6 +18,61 @@ const FAR_FUTURE = () => {
   return d.toISOString()
 }
 
+const STORAGE_URL = `${import.meta.env.VITE_SUPABASE_URL}/storage/v1/object/public/seller-media`
+
+function BrowseBannerPreview({ title, imageUrl, sellerName, avatarUrl }: {
+  title: string; imageUrl: string | null; sellerName: string; avatarUrl: string | null
+}) {
+  return (
+    <div className="preview-wrap">
+      <p className="preview-label">Preview · Browse Banner</p>
+      <div className="preview-browse-banner">
+        {imageUrl
+          ? <img src={imageUrl} alt="" className="preview-banner-img" />
+          : <div className="preview-banner-placeholder" />
+        }
+        <div className="preview-banner-logo">
+          {avatarUrl ? <img src={avatarUrl} alt="" /> : <span>{sellerName.charAt(0).toUpperCase()}</span>}
+        </div>
+        <div className="preview-banner-content">
+          <span className="preview-banner-seller">{sellerName}</span>
+          <span className="preview-banner-title">{title || 'Your offer title here'}</span>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function SplashPreview({ title, body, imageUrl, sellerName, avatarUrl }: {
+  title: string; body: string; imageUrl: string | null; sellerName: string; avatarUrl: string | null
+}) {
+  return (
+    <div className="preview-wrap">
+      <p className="preview-label">Preview · Splash Screen</p>
+      <div className="preview-splash-card">
+        {imageUrl
+          ? <img src={imageUrl} alt="" className="preview-splash-img" />
+          : <div className="preview-splash-placeholder" />
+        }
+        <div className="preview-splash-body">
+          <div className="splash-header-row">
+            <div className="splash-logo">
+              {avatarUrl ? <img src={avatarUrl} alt="" /> : <span>{sellerName.charAt(0).toUpperCase()}</span>}
+            </div>
+            <p className="splash-seller">{sellerName}</p>
+          </div>
+          <h2 className="splash-title" style={{ fontSize: 16, margin: '6px 0 4px' }}>{title || 'Your offer title here'}</h2>
+          {body && <p className="splash-text" style={{ fontSize: 12 }}>{body}</p>}
+          <div className="splash-actions" style={{ marginTop: 12 }}>
+            <button className="splash-cta" style={{ padding: '8px', fontSize: 13 }}>View offer</button>
+            <button className="splash-skip" style={{ padding: '8px', fontSize: 13 }}>Maybe later</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export default function SellerAnnouncements() {
   const { seller } = useAuth()
   const navigate = useNavigate()
@@ -27,6 +83,8 @@ export default function SellerAnnouncements() {
   const [form, setForm] = useState({ title: '', body: '', expires_at: '', noExpiry: false })
   const [posterFile, setPosterFile] = useState<File | null>(null)
   const [posterPreview, setPosterPreview] = useState<string | null>(null)
+  const [formTier, setFormTier] = useState<FormTier>('tier1')
+  const [formDays, setFormDays] = useState(1)
 
   const [showBoostFor, setShowBoostFor] = useState<string | null>(null)
   const [boostForm, setBoostForm] = useState<{ type: 'browse_banner' | 'splash'; days: number }>({ type: 'browse_banner', days: 1 })
@@ -49,9 +107,25 @@ export default function SellerAnnouncements() {
     setPosterPreview(URL.createObjectURL(file))
   }
 
+  function openForm() {
+    setForm({ title: '', body: '', expires_at: defaultExpiry(), noExpiry: false })
+    setPosterFile(null)
+    setPosterPreview(null)
+    setFormTier('tier1')
+    setFormDays(1)
+    setShowForm(true)
+  }
+
+  function closeForm() {
+    setShowForm(false)
+    setPosterFile(null)
+    setPosterPreview(null)
+  }
+
   async function create() {
     if (!seller || !form.title) return
-    if (!form.noExpiry && !form.expires_at) return
+    const isBoost = formTier !== 'tier1'
+    if (!isBoost && !form.noExpiry && !form.expires_at) return
     setSaving(true)
 
     let photo_urls: string[] = []
@@ -64,19 +138,30 @@ export default function SellerAnnouncements() {
       setUploading(false)
     }
 
-    const expires_at = form.noExpiry ? FAR_FUTURE() : new Date(form.expires_at).toISOString()
-
+    const expires_at = (form.noExpiry || isBoost) ? FAR_FUTURE() : new Date(form.expires_at).toISOString()
     const { data } = await supabase
       .from('offers')
       .insert({ seller_id: seller.id, title: form.title, body: form.body || null, expires_at, is_active: true, photo_urls })
       .select('*, offer_boosts(*)')
       .single()
 
-    if (data) setAnnouncements([data as OfferWithBoosts, ...announcements])
-    setForm({ title: '', body: '', expires_at: '', noExpiry: false })
-    setPosterFile(null)
-    setPosterPreview(null)
-    setShowForm(false)
+    if (data) {
+      let withBoosts = data as OfferWithBoosts
+      if (isBoost) {
+        const amountPaise = formDays * BOOST_PRICES[formTier] * 100
+        const { data: boostData } = await createBoostOrder({
+          offerId: data.id,
+          sellerId: seller.id,
+          boostType: formTier as 'browse_banner' | 'splash',
+          daysPurchased: formDays,
+          amountPaise,
+        })
+        if (boostData) withBoosts = { ...data, offer_boosts: [boostData as OfferBoost] } as OfferWithBoosts
+      }
+      setAnnouncements([withBoosts, ...announcements])
+    }
+
+    closeForm()
     setSaving(false)
   }
 
@@ -126,19 +211,19 @@ export default function SellerAnnouncements() {
   }
 
   function getUrl(path: string) {
-    return `${import.meta.env.VITE_SUPABASE_URL}/storage/v1/object/public/seller-media/${path}`
+    return `${STORAGE_URL}/${path}`
   }
 
+  const avatarUrl = seller?.avatar_url ? getUrl(seller.avatar_url) : null
   const boostTotal = boostForm.days * BOOST_PRICES[boostForm.type]
+  const formTotal = formDays * (formTier !== 'tier1' ? BOOST_PRICES[formTier] : 0)
 
   return (
     <div className="editor-page">
       <div className="editor-header">
         <button className="back-btn" onClick={() => navigate('/seller/dashboard')}>← Back</button>
         <h1>Announcements</h1>
-        <button className="save-btn" onClick={() => { setShowForm(true); setForm({ title: '', body: '', expires_at: defaultExpiry(), noExpiry: false }) }}>
-          + New
-        </button>
+        <button className="save-btn" onClick={openForm}>+ New</button>
       </div>
 
       <div className="editor-form">
@@ -147,8 +232,43 @@ export default function SellerAnnouncements() {
           <div className="offer-form">
             <h2>New announcement</h2>
 
+            {/* Tier selector */}
             <div className="form-group">
-              <label>Image (optional)</label>
+              <label>Visibility tier</label>
+              <div className="tier-selector">
+                <button
+                  className={`tier-card ${formTier === 'tier1' ? 'selected' : ''}`}
+                  onClick={() => setFormTier('tier1')}
+                >
+                  <span className="tier-card-badge">Tier 1</span>
+                  <span className="tier-card-name">Profile Banner</span>
+                  <span className="tier-card-price tier-free">Free</span>
+                  <span className="tier-card-desc">Permanent banner on your seller page</span>
+                </button>
+                <button
+                  className={`tier-card ${formTier === 'browse_banner' ? 'selected' : ''}`}
+                  onClick={() => setFormTier('browse_banner')}
+                >
+                  <span className="tier-card-badge">Tier 2</span>
+                  <span className="tier-card-name">Browse Banner</span>
+                  <span className="tier-card-price">₹500/day</span>
+                  <span className="tier-card-desc">Rotating banner on the browse page</span>
+                </button>
+                <button
+                  className={`tier-card ${formTier === 'splash' ? 'selected' : ''}`}
+                  onClick={() => setFormTier('splash')}
+                >
+                  <span className="tier-card-badge">Tier 3</span>
+                  <span className="tier-card-name">Splash Screen</span>
+                  <span className="tier-card-price">₹1,000/day</span>
+                  <span className="tier-card-desc">Full-screen when consumers open the app</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Image */}
+            <div className="form-group">
+              <label>Image {formTier !== 'tier1' ? '*' : '(optional)'}</label>
               <label className="offer-poster-upload">
                 {posterPreview
                   ? <img src={posterPreview} alt="Preview" className="offer-poster-preview" />
@@ -163,28 +283,72 @@ export default function SellerAnnouncements() {
               <label>Title *</label>
               <input type="text" placeholder="e.g. 20% off all cakes this weekend!" value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} autoFocus />
             </div>
+
             <div className="form-group">
               <label>Details (optional)</label>
               <textarea rows={3} placeholder="Any additional details…" value={form.body} onChange={e => setForm({ ...form, body: e.target.value })} />
             </div>
 
-            <div className="form-group">
-              <label className="checkbox-label">
-                <input type="checkbox" checked={form.noExpiry} onChange={e => setForm({ ...form, noExpiry: e.target.checked })} />
-                <span><strong>No expiry</strong> — stays on your profile until you delete it</span>
-              </label>
-            </div>
+            {/* Expiry — only for Tier 1 */}
+            {formTier === 'tier1' && (
+              <>
+                <div className="form-group">
+                  <label className="checkbox-label">
+                    <input type="checkbox" checked={form.noExpiry} onChange={e => setForm({ ...form, noExpiry: e.target.checked })} />
+                    <span><strong>No expiry</strong> — stays on your profile until you delete it</span>
+                  </label>
+                </div>
+                {!form.noExpiry && (
+                  <div className="form-group">
+                    <label>Expires at</label>
+                    <input type="datetime-local" value={form.expires_at} onChange={e => setForm({ ...form, expires_at: e.target.value })} min={new Date().toISOString().slice(0, 16)} />
+                  </div>
+                )}
+              </>
+            )}
 
-            {!form.noExpiry && (
+            {/* Days + total — for Tier 2/3 */}
+            {formTier !== 'tier1' && (
               <div className="form-group">
-                <label>Expires at</label>
-                <input type="datetime-local" value={form.expires_at} onChange={e => setForm({ ...form, expires_at: e.target.value })} min={new Date().toISOString().slice(0, 16)} />
+                <label>Number of days</label>
+                <div className="boost-days-row">
+                  <input
+                    type="number" min={1} max={30}
+                    value={formDays}
+                    onChange={e => setFormDays(Math.max(1, Math.min(30, Number(e.target.value))))}
+                  />
+                  <span className="boost-total">Total: ₹{formTotal.toLocaleString('en-IN')}</span>
+                </div>
+                <p className="form-help">Pay via UPI to dishcovery.blr@gmail.com after publishing — we'll activate within 24 hours.</p>
               </div>
             )}
 
+            {/* Live preview — for Tier 2/3 */}
+            {formTier === 'browse_banner' && (
+              <BrowseBannerPreview
+                title={form.title}
+                imageUrl={posterPreview}
+                sellerName={seller?.display_name ?? ''}
+                avatarUrl={avatarUrl}
+              />
+            )}
+            {formTier === 'splash' && (
+              <SplashPreview
+                title={form.title}
+                body={form.body}
+                imageUrl={posterPreview}
+                sellerName={seller?.display_name ?? ''}
+                avatarUrl={avatarUrl}
+              />
+            )}
+
             <div className="form-actions">
-              <button onClick={() => { setShowForm(false); setPosterFile(null); setPosterPreview(null) }}>Cancel</button>
-              <button className="btn-primary-sm" onClick={create} disabled={saving || uploading || !form.title || (!form.noExpiry && !form.expires_at)}>
+              <button onClick={closeForm}>Cancel</button>
+              <button
+                className="btn-primary-sm"
+                onClick={create}
+                disabled={saving || uploading || !form.title || (formTier === 'tier1' && !form.noExpiry && !form.expires_at)}
+              >
                 {uploading ? 'Uploading…' : saving ? 'Publishing…' : 'Publish'}
               </button>
             </div>
@@ -217,7 +381,7 @@ export default function SellerAnnouncements() {
                       : `${s === 'active' ? 'Expires' : 'Expired'} ${new Date(a.expires_at).toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}`}
                   </div>
 
-                  {/* Boost section — only for active/permanent announcements */}
+                  {/* Boost section */}
                   {(s === 'active' || s === 'permanent') && (
                     <div className="boost-section">
                       {isBoostActive && (
@@ -251,7 +415,6 @@ export default function SellerAnnouncements() {
                         showBoostFor === a.id ? (
                           <div className="boost-form">
                             <p className="boost-form-title">Boost this announcement</p>
-
                             <div className="boost-type-btns">
                               <button
                                 className={`boost-type-btn ${boostForm.type === 'browse_banner' ? 'selected' : ''}`}
@@ -270,7 +433,6 @@ export default function SellerAnnouncements() {
                                 <span className="boost-type-desc">Full-screen when consumers open the app</span>
                               </button>
                             </div>
-
                             <div className="boost-days-row">
                               <label>Days</label>
                               <input
@@ -280,7 +442,6 @@ export default function SellerAnnouncements() {
                               />
                               <span className="boost-total">Total: ₹{boostTotal.toLocaleString('en-IN')}</span>
                             </div>
-
                             <div className="boost-form-actions">
                               <button onClick={() => setShowBoostFor(null)}>Cancel</button>
                               <button className="btn-primary-sm" onClick={() => requestBoost(a.id)} disabled={requestingBoost}>

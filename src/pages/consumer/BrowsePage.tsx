@@ -119,7 +119,15 @@ export default function BrowsePage() {
               <img src={`${STORAGE_URL}/${splash.offers.photo_urls[0]}`} alt={splash.offers.title} className="splash-img" />
             )}
             <div className="splash-body">
-              <p className="splash-seller">{splash.sellers.display_name}</p>
+              <div className="splash-header-row">
+                <div className="splash-logo">
+                  {splash.sellers.avatar_url
+                    ? <img src={`${STORAGE_URL}/${splash.sellers.avatar_url}`} alt="" />
+                    : <span>{splash.sellers.display_name.charAt(0)}</span>
+                  }
+                </div>
+                <p className="splash-seller">{splash.sellers.display_name}</p>
+              </div>
               <h2 className="splash-title">{splash.offers.title}</h2>
               {splash.offers.body && <p className="splash-text">{splash.offers.body}</p>}
               <div className="splash-actions">
@@ -170,6 +178,12 @@ export default function BrowsePage() {
           {browseBanners[bannerIdx].offers.photo_urls?.[0] && (
             <img src={`${STORAGE_URL}/${browseBanners[bannerIdx].offers.photo_urls[0]}`} alt="" className="browse-banner-img" />
           )}
+          <div className="browse-banner-logo">
+            {browseBanners[bannerIdx].sellers.avatar_url
+              ? <img src={`${STORAGE_URL}/${browseBanners[bannerIdx].sellers.avatar_url}`} alt="" />
+              : <span>{browseBanners[bannerIdx].sellers.display_name.charAt(0)}</span>
+            }
+          </div>
           <div className="browse-banner-content">
             <span className="browse-banner-seller">{browseBanners[bannerIdx].sellers.display_name}</span>
             <span className="browse-banner-title">{browseBanners[bannerIdx].offers.title}</span>

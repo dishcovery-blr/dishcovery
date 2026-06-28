@@ -1,8 +1,14 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { browseSellers } from '../../lib/supabase'
+import { browseSellers, supabase } from '../../lib/supabase'
 import { useAuth } from '../../context/AuthContext'
 import type { SellerCard } from '../../types/database'
+
+interface BoostBanner {
+  id: string
+  offers: { id: string; title: string; body: string | null; photo_urls: string[] }
+  sellers: { id: string; display_name: string; avatar_url: string | null }
+}
 
 const CUISINE_OPTIONS = [
   'Cakes & Pastries', 'Bread & Loaves', 'Cookies', 'Chocolates',
@@ -26,10 +32,46 @@ export default function BrowsePage() {
   const [cuisineFilter, setCuisineFilter] = useState<string[]>([])
   const [dietaryFilter, setDietaryFilter] = useState<string[]>([])
   const [showFilters, setShowFilters] = useState(false)
+  const [browseBanners, setBrowseBanners] = useState<BoostBanner[]>([])
+  const [bannerIdx, setBannerIdx] = useState(0)
+  const [splash, setSplash] = useState<BoostBanner | null>(null)
+  const [splashDismissed, setSplashDismissed] = useState(false)
 
   useEffect(() => {
     loadSellers()
   }, [sellerType, cuisineFilter, dietaryFilter, locationFilter])
+
+  useEffect(() => {
+    loadBoosts()
+  }, [])
+
+  useEffect(() => {
+    if (browseBanners.length <= 1) return
+    const interval = setInterval(() => setBannerIdx(i => (i + 1) % browseBanners.length), 5000)
+    return () => clearInterval(interval)
+  }, [browseBanners])
+
+  async function loadBoosts() {
+    const now = new Date().toISOString()
+    const { data } = await supabase
+      .from('offer_boosts')
+      .select('id, boost_type, offers(id, title, body, photo_urls), sellers(id, display_name, avatar_url)')
+      .eq('payment_status', 'paid')
+      .lte('starts_at', now)
+      .gt('ends_at', now)
+    if (!data) return
+    const banners = data.filter((b: any) => b.boost_type === 'browse_banner') as BoostBanner[]
+    const splashes = data.filter((b: any) => b.boost_type === 'splash') as BoostBanner[]
+    setBrowseBanners(banners)
+    if (splashes.length > 0 && !sessionStorage.getItem('splash_shown')) {
+      setSplash(splashes[Math.floor(Math.random() * splashes.length)])
+    }
+  }
+
+  function dismissSplash() {
+    sessionStorage.setItem('splash_shown', '1')
+    setSplashDismissed(true)
+  }
 
   async function loadSellers() {
     setLoading(true)
@@ -68,6 +110,27 @@ export default function BrowsePage() {
   return (
     <div className="browse-page">
 
+      {/* Splash overlay */}
+      {splash && !splashDismissed && (
+        <div className="splash-overlay">
+          <div className="splash-card">
+            <button className="splash-close" onClick={dismissSplash}>✕</button>
+            {splash.offers.photo_urls?.[0] && (
+              <img src={`${STORAGE_URL}/${splash.offers.photo_urls[0]}`} alt={splash.offers.title} className="splash-img" />
+            )}
+            <div className="splash-body">
+              <p className="splash-seller">{splash.sellers.display_name}</p>
+              <h2 className="splash-title">{splash.offers.title}</h2>
+              {splash.offers.body && <p className="splash-text">{splash.offers.body}</p>}
+              <div className="splash-actions">
+                <button className="splash-cta" onClick={() => { dismissSplash(); navigate(`/seller/${splash.sellers.id}`) }}>View offer</button>
+                <button className="splash-skip" onClick={dismissSplash}>Maybe later</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Top bar: location + profile */}
       <div className="browse-topbar">
         <button className="location-btn" onClick={() => setShowLocationInput(v => !v)}>
@@ -97,6 +160,24 @@ export default function BrowsePage() {
           />
           {locationFilter && (
             <button className="location-clear-btn" onClick={() => { setLocationFilter(''); setShowLocationInput(false) }}>✕</button>
+          )}
+        </div>
+      )}
+
+      {/* Browse banners */}
+      {browseBanners.length > 0 && (
+        <div className="browse-banner-wrap" onClick={() => navigate(`/seller/${browseBanners[bannerIdx].sellers.id}`)}>
+          {browseBanners[bannerIdx].offers.photo_urls?.[0] && (
+            <img src={`${STORAGE_URL}/${browseBanners[bannerIdx].offers.photo_urls[0]}`} alt="" className="browse-banner-img" />
+          )}
+          <div className="browse-banner-content">
+            <span className="browse-banner-seller">{browseBanners[bannerIdx].sellers.display_name}</span>
+            <span className="browse-banner-title">{browseBanners[bannerIdx].offers.title}</span>
+          </div>
+          {browseBanners.length > 1 && (
+            <div className="browse-banner-dots">
+              {browseBanners.map((_, i) => <span key={i} className={`banner-dot ${i === bannerIdx ? 'active' : ''}`} />)}
+            </div>
           )}
         </div>
       )}

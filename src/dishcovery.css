@@ -928,3 +928,421 @@ img { max-width: 100%; display: block; }
   width: 100%;
   justify-content: center;
 }
+
+/* ── Browse banner (Tier 2) ─────────────────────────────────── */
+.browse-banner-wrap {
+  margin: 8px 16px 4px;
+  border-radius: 14px;
+  overflow: hidden;
+  cursor: pointer;
+  position: relative;
+  background: #1a1a1a;
+  min-height: 110px;
+}
+
+.browse-banner-img {
+  width: 100%;
+  height: 130px;
+  object-fit: cover;
+  opacity: 0.75;
+  display: block;
+}
+
+.browse-banner-content {
+  position: absolute;
+  bottom: 28px;
+  left: 14px;
+  right: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.browse-banner-seller {
+  font-size: 11px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.8);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.browse-banner-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1.3;
+}
+
+.browse-banner-dots {
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 5px;
+}
+
+.banner-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.4);
+}
+
+.banner-dot.active {
+  background: #fff;
+}
+
+/* ── Splash overlay (Tier 3) ────────────────────────────────── */
+.splash-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.splash-card {
+  background: #fff;
+  border-radius: 20px;
+  overflow: hidden;
+  width: 100%;
+  max-width: 400px;
+  position: relative;
+}
+
+.splash-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(0,0,0,0.4);
+  color: #fff;
+  border: none;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+}
+
+.splash-img {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+  display: block;
+}
+
+.splash-body {
+  padding: 20px;
+}
+
+.splash-seller {
+  font-size: 12px;
+  font-weight: 600;
+  color: #E8552A;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 0 0 6px;
+}
+
+.splash-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 0 8px;
+  line-height: 1.3;
+}
+
+.splash-text {
+  font-size: 14px;
+  color: #555;
+  margin: 0 0 16px;
+}
+
+.splash-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.splash-cta {
+  flex: 1;
+  background: #E8552A;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.splash-skip {
+  flex: 1;
+  background: #f5f5f5;
+  color: #555;
+  border: none;
+  border-radius: 10px;
+  padding: 12px;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+/* ── Boost UI in seller announcements ───────────────────────── */
+.boost-section {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.boost-cta-btn {
+  width: 100%;
+  background: none;
+  border: 1.5px dashed #E8552A;
+  color: #E8552A;
+  border-radius: 10px;
+  padding: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.boost-status {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 12px;
+  border-radius: 10px;
+}
+
+.boost-status.active { background: #f0faf0; }
+.boost-status.pending { background: #fff8f0; }
+
+.boost-status-icon { font-size: 18px; flex-shrink: 0; }
+
+.boost-status strong { font-size: 14px; display: block; }
+
+.boost-expires {
+  font-size: 12px;
+  color: #666;
+  display: block;
+  margin-top: 3px;
+}
+
+.boost-payment-info {
+  margin-top: 8px;
+  font-size: 13px;
+  color: #555;
+}
+
+.boost-payment-info p { margin: 3px 0; }
+
+.boost-ref {
+  background: #f0f0f0;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-family: monospace;
+  letter-spacing: 1px;
+}
+
+.boost-hint { color: #aaa !important; font-size: 12px !important; }
+
+.boost-form {
+  background: #f8f8f6;
+  border-radius: 12px;
+  padding: 14px;
+}
+
+.boost-form-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 0 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.boost-type-btns {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.boost-type-btn {
+  flex: 1;
+  border: 1.5px solid #e0e0e0;
+  background: #fff;
+  border-radius: 10px;
+  padding: 10px;
+  text-align: left;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.boost-type-btn.selected {
+  border-color: #E8552A;
+  background: #fff5f2;
+}
+
+.boost-type-name { font-size: 13px; font-weight: 700; color: #1a1a1a; }
+.boost-type-price { font-size: 13px; font-weight: 600; color: #E8552A; }
+.boost-type-desc { font-size: 11px; color: #888; line-height: 1.3; }
+
+.boost-days-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.boost-days-row label { font-size: 14px; font-weight: 500; }
+
+.boost-days-row input {
+  width: 60px;
+  border: 1.5px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 14px;
+  text-align: center;
+}
+
+.boost-total {
+  font-size: 15px;
+  font-weight: 700;
+  color: #E8552A;
+  margin-left: auto;
+}
+
+.boost-form-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+/* ── Admin boosts page ──────────────────────────────────────── */
+.admin-filter-tabs {
+  display: flex;
+  gap: 8px;
+  padding: 12px 16px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.admin-tab {
+  padding: 6px 16px;
+  border-radius: 20px;
+  border: 1.5px solid #e0e0e0;
+  background: #fff;
+  font-size: 14px;
+  cursor: pointer;
+  position: relative;
+}
+
+.admin-tab.active {
+  background: #1a1a1a;
+  color: #fff;
+  border-color: #1a1a1a;
+}
+
+.admin-tab-badge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  background: #E8552A;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.boost-admin-list { padding: 12px 16px; display: flex; flex-direction: column; gap: 12px; }
+
+.boost-admin-row {
+  background: #fff;
+  border-radius: 12px;
+  padding: 14px;
+  border: 1px solid #f0f0f0;
+}
+
+.boost-admin-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.boost-type-badge {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.boost-type-badge.browse_banner { background: #e8f4fd; color: #1a6fa8; }
+.boost-type-badge.splash { background: #fde8f4; color: #a81a6f; }
+
+.boost-admin-status {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 20px;
+}
+
+.boost-admin-status.pending { background: #fff3e0; color: #e65100; }
+.boost-admin-status.paid { background: #e8f5e9; color: #2e7d32; }
+.boost-admin-status.cancelled { background: #f5f5f5; color: #aaa; }
+
+.boost-admin-seller { font-size: 15px; font-weight: 700; margin: 0 0 2px; }
+.boost-admin-offer { font-size: 13px; color: #666; margin: 0 0 8px; }
+
+.boost-admin-details {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: 13px;
+  color: #555;
+  margin-bottom: 10px;
+}
+
+.boost-ref-small {
+  font-family: monospace;
+  background: #f0f0f0;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 11px;
+}
+
+.boost-admin-actions { display: flex; gap: 8px; }
+
+.btn-danger-sm {
+  padding: 6px 14px;
+  border-radius: 8px;
+  border: 1.5px solid #cc3300;
+  background: #fff;
+  color: #cc3300;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.admin-empty {
+  text-align: center;
+  padding: 40px 16px;
+  color: #aaa;
+  font-size: 15px;
+}

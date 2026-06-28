@@ -34,6 +34,7 @@ export default function Navbar() {
             <button className="navbar-link" onClick={() => navigate('/admin/sellers')}>Sellers</button>
             <button className="navbar-link" onClick={() => navigate('/admin/fssai')}>FSSAI</button>
             <button className="navbar-link" onClick={() => navigate('/admin/consumers')}>Consumers</button>
+            <button className="navbar-link" onClick={() => navigate('/admin/boosts')}>Boosts</button>
             <button className="navbar-btn-outline" onClick={handleSignOut}>Sign out</button>
           </>
         ) : role === 'seller' ? (

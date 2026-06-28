@@ -104,6 +104,25 @@ export interface Review {
   created_at: string
 }
 
+export type BoostType = 'browse_banner' | 'splash'
+export type BoostPaymentStatus = 'pending' | 'paid' | 'cancelled'
+
+export interface OfferBoost {
+  id: string
+  offer_id: string
+  seller_id: string
+  boost_type: BoostType
+  days_purchased: number
+  amount_paise: number
+  payment_status: BoostPaymentStatus
+  starts_at: string | null
+  ends_at: string | null
+  razorpay_order_id: string | null
+  razorpay_payment_id: string | null
+  created_at: string
+  updated_at: string
+}
+
 export interface Save {
   seller_id: string
   consumer_id: string

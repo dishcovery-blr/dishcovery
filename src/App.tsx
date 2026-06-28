@@ -19,6 +19,7 @@ import AdminDashboard from './pages/admin/AdminDashboard'
 import AdminSellers from './pages/admin/AdminSellers'
 import AdminFssai from './pages/admin/AdminFssai'
 import AdminConsumers from './pages/admin/AdminConsumers'
+import AdminBoosts from './pages/admin/AdminBoosts'
 import './dishcovery.css'
 import ForgotPasswordPage from './pages/ForgotPasswordPage'
 import ResetPasswordPage from './pages/ResetPasswordPage'
@@ -65,6 +66,7 @@ function AppRoutes() {
         <Route path="/admin/sellers" element={user ? <AdminSellers /> : <Navigate to="/" replace />} />
         <Route path="/admin/fssai" element={user ? <AdminFssai /> : <Navigate to="/" replace />} />
         <Route path="/admin/consumers" element={user ? <AdminConsumers /> : <Navigate to="/" replace />} />
+        <Route path="/admin/boosts" element={user ? <AdminBoosts /> : <Navigate to="/" replace />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </>

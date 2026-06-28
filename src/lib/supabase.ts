@@ -210,6 +210,31 @@ export async function deleteOffer(offerId: string) {
   return supabase.from('offers').delete().eq('id', offerId)
 }
 
+// ── Boost orders ───────────────────────────────────────────────
+// Razorpay slot: when GST is registered, replace this function body with
+// a Razorpay order creation call, store razorpay_order_id, and set
+// payment_status based on the payment response / webhook.
+export async function createBoostOrder(params: {
+  offerId: string
+  sellerId: string
+  boostType: 'browse_banner' | 'splash'
+  daysPurchased: number
+  amountPaise: number
+}) {
+  return supabase
+    .from('offer_boosts')
+    .insert({
+      offer_id: params.offerId,
+      seller_id: params.sellerId,
+      boost_type: params.boostType,
+      days_purchased: params.daysPurchased,
+      amount_paise: params.amountPaise,
+      payment_status: 'pending',
+    })
+    .select()
+    .single()
+}
+
 // ── Analytics ──────────────────────────────────────────────────
 
 export async function trackProfileView(sellerId: string) {

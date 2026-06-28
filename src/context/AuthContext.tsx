@@ -104,12 +104,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       async (_event, session) => {
         setSession(session)
         setUser(session?.user ?? null)
-        setSeller(null)
-        setConsumer(null)
-        if (session?.user) {
-          await loadProfile(session.user)
-        } else {
+        if (!session?.user) {
+          setSeller(null)
+          setConsumer(null)
+          setRole(null)
           setLoading(false)
+        } else {
+          setLoading(true)
+          await loadProfile(session.user)
         }
       }
     )

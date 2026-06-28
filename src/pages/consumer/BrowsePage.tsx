@@ -27,24 +27,27 @@ export default function BrowsePage() {
 
   async function loadSellers() {
     setLoading(true)
-    const { data } = await browseSellers({
-      sellerType: sellerType === 'all' ? undefined : sellerType,
-      cuisineTags: cuisineFilter.length > 0 ? cuisineFilter : undefined,
-      dietaryTags: dietaryFilter.length > 0 ? dietaryFilter : undefined,
-      searchQuery: search || undefined,
-    })
-
-    if (data) {
-      const enriched = (data as any[]).map(s => {
-        const reviews = s.reviews ?? []
-        const avg = reviews.length > 0
-          ? reviews.reduce((sum: number, r: any) => sum + r.rating, 0) / reviews.length
-          : null
-        return { ...s, avg_rating: avg ? Math.round(avg * 10) / 10 : null, review_count: reviews.length }
+    try {
+      const { data } = await browseSellers({
+        sellerType: sellerType === 'all' ? undefined : sellerType,
+        cuisineTags: cuisineFilter.length > 0 ? cuisineFilter : undefined,
+        dietaryTags: dietaryFilter.length > 0 ? dietaryFilter : undefined,
+        searchQuery: search || undefined,
       })
-      setSellers(enriched)
+
+      if (data) {
+        const enriched = (data as any[]).map(s => {
+          const reviews = s.reviews ?? []
+          const avg = reviews.length > 0
+            ? reviews.reduce((sum: number, r: any) => sum + r.rating, 0) / reviews.length
+            : null
+          return { ...s, avg_rating: avg ? Math.round(avg * 10) / 10 : null, review_count: reviews.length }
+        })
+        setSellers(enriched)
+      }
+    } finally {
+      setLoading(false)
     }
-    setLoading(false)
   }
 
   function toggleTag(arr: string[], val: string, setter: (v: string[]) => void) {
@@ -152,17 +155,18 @@ export default function BrowsePage() {
   )
 }
 
+const STORAGE_URL = `${import.meta.env.VITE_SUPABASE_URL}/storage/v1/object/public/seller-media`
+
 function SellerCard({ seller, onClick }: { seller: SellerCard; onClick: () => void }) {
-  function stars(n: number) {
-    return '★'.repeat(Math.round(n)) + '☆'.repeat(5 - Math.round(n))
-  }
+  const coverUrl = seller.cover_photo_url ? `${STORAGE_URL}/${seller.cover_photo_url}` : null
+  const avatarUrl = seller.avatar_url ? `${STORAGE_URL}/${seller.avatar_url}` : null
 
   return (
     <div className="seller-card" onClick={onClick}>
       {/* Cover */}
       <div className="card-cover">
-        {seller.cover_photo_url
-          ? <img src={seller.cover_photo_url} alt={seller.display_name} className="card-cover-img" />
+        {coverUrl
+          ? <img src={coverUrl} alt={seller.display_name} className="card-cover-img" />
           : <div className="card-cover-placeholder" />
         }
         {seller.is_featured && <span className="featured-badge">Featured</span>}
@@ -173,8 +177,8 @@ function SellerCard({ seller, onClick }: { seller: SellerCard; onClick: () => vo
 
       {/* Avatar */}
       <div className="card-avatar">
-        {seller.avatar_url
-          ? <img src={seller.avatar_url} alt={seller.display_name} />
+        {avatarUrl
+          ? <img src={avatarUrl} alt={seller.display_name} />
           : <span>{seller.display_name.charAt(0)}</span>
         }
       </div>

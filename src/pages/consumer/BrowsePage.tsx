@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { browseSellers } from '../../lib/supabase'
+import { useAuth } from '../../context/AuthContext'
 import type { SellerCard } from '../../types/database'
 
 const CUISINE_OPTIONS = [
@@ -11,11 +12,16 @@ const CUISINE_OPTIONS = [
 
 const DIETARY_OPTIONS = ['Eggless', 'Vegan', 'Gluten-Free', 'Jain', 'Keto', 'Low Sugar']
 
+const STORAGE_URL = `${import.meta.env.VITE_SUPABASE_URL}/storage/v1/object/public/seller-media`
+
 export default function BrowsePage() {
   const navigate = useNavigate()
+  const { consumer, role } = useAuth()
   const [sellers, setSellers] = useState<SellerCard[]>([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
+  const [locationFilter, setLocationFilter] = useState('')
+  const [showLocationInput, setShowLocationInput] = useState(false)
   const [sellerType, setSellerType] = useState<'all' | 'baker' | 'home_cook'>('all')
   const [cuisineFilter, setCuisineFilter] = useState<string[]>([])
   const [dietaryFilter, setDietaryFilter] = useState<string[]>([])
@@ -23,7 +29,7 @@ export default function BrowsePage() {
 
   useEffect(() => {
     loadSellers()
-  }, [sellerType, cuisineFilter, dietaryFilter])
+  }, [sellerType, cuisineFilter, dietaryFilter, locationFilter])
 
   async function loadSellers() {
     setLoading(true)
@@ -33,6 +39,7 @@ export default function BrowsePage() {
         cuisineTags: cuisineFilter.length > 0 ? cuisineFilter : undefined,
         dietaryTags: dietaryFilter.length > 0 ? dietaryFilter : undefined,
         searchQuery: search || undefined,
+        locationQuery: locationFilter || undefined,
       })
 
       if (data) {
@@ -60,10 +67,39 @@ export default function BrowsePage() {
 
   return (
     <div className="browse-page">
-      <div className="browse-header">
-        <h1 className="browse-title">Discover home kitchens near you</h1>
-        <p className="browse-subtitle">Home bakers, cooks, and cloud kitchens near you</p>
+
+      {/* Top bar: location + profile */}
+      <div className="browse-topbar">
+        <button className="location-btn" onClick={() => setShowLocationInput(v => !v)}>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          {locationFilter || 'Bangalore'}
+        </button>
+
+        {role === 'consumer' && (
+          <button className="profile-avatar-btn" onClick={() => navigate('/consumer/profile')}>
+            {consumer?.display_name?.charAt(0)?.toUpperCase() ?? '?'}
+          </button>
+        )}
       </div>
+
+      {showLocationInput && (
+        <div className="location-input-row">
+          <input
+            autoFocus
+            type="text"
+            placeholder="Filter by neighbourhood (e.g. Indiranagar)"
+            value={locationFilter}
+            onChange={e => setLocationFilter(e.target.value)}
+            onKeyDown={e => {
+              if (e.key === 'Enter') setShowLocationInput(false)
+              if (e.key === 'Escape') { setLocationFilter(''); setShowLocationInput(false) }
+            }}
+          />
+          {locationFilter && (
+            <button className="location-clear-btn" onClick={() => { setLocationFilter(''); setShowLocationInput(false) }}>✕</button>
+          )}
+        </div>
+      )}
 
       {/* Search */}
       <div className="browse-search-row">
@@ -140,7 +176,7 @@ export default function BrowsePage() {
       ) : filtered.length === 0 ? (
         <div className="browse-empty">
           <p>No kitchens found matching your filters.</p>
-          <button onClick={() => { setCuisineFilter([]); setDietaryFilter([]); setSearch('') }}>
+          <button onClick={() => { setCuisineFilter([]); setDietaryFilter([]); setSearch(''); setLocationFilter('') }}>
             Clear filters
           </button>
         </div>
@@ -155,15 +191,12 @@ export default function BrowsePage() {
   )
 }
 
-const STORAGE_URL = `${import.meta.env.VITE_SUPABASE_URL}/storage/v1/object/public/seller-media`
-
 function SellerCard({ seller, onClick }: { seller: SellerCard; onClick: () => void }) {
   const coverUrl = seller.cover_photo_url ? `${STORAGE_URL}/${seller.cover_photo_url}` : null
   const avatarUrl = seller.avatar_url ? `${STORAGE_URL}/${seller.avatar_url}` : null
 
   return (
     <div className="seller-card" onClick={onClick}>
-      {/* Cover */}
       <div className="card-cover">
         {coverUrl
           ? <img src={coverUrl} alt={seller.display_name} className="card-cover-img" />
@@ -175,7 +208,6 @@ function SellerCard({ seller, onClick }: { seller: SellerCard; onClick: () => vo
         </span>
       </div>
 
-      {/* Avatar */}
       <div className="card-avatar">
         {avatarUrl
           ? <img src={avatarUrl} alt={seller.display_name} />
@@ -183,7 +215,6 @@ function SellerCard({ seller, onClick }: { seller: SellerCard; onClick: () => vo
         }
       </div>
 
-      {/* Info */}
       <div className="card-info">
         <h3 className="card-name">{seller.display_name}</h3>
 

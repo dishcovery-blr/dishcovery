@@ -147,6 +147,7 @@ export async function browseSellers({
   cuisineTags,
   dietaryTags,
   searchQuery,
+  locationQuery,
   featuredOnly = false,
   page = 0,
   pageSize = 20,
@@ -155,6 +156,7 @@ export async function browseSellers({
   cuisineTags?: string[]
   dietaryTags?: string[]
   searchQuery?: string
+  locationQuery?: string
   featuredOnly?: boolean
   page?: number
   pageSize?: number
@@ -177,6 +179,7 @@ export async function browseSellers({
   if (cuisineTags?.length) query = query.overlaps('cuisine_tags', cuisineTags)
   if (dietaryTags?.length) query = query.overlaps('dietary_tags', dietaryTags)
   if (searchQuery) query = query.ilike('display_name', `%${searchQuery}%`)
+  if (locationQuery) query = query.ilike('location_text', `%${locationQuery}%`)
 
   return query
 }

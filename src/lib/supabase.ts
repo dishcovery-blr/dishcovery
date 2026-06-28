@@ -161,6 +161,7 @@ export async function browseSellers({
   page?: number
   pageSize?: number
 }) {
+  const now = new Date().toISOString()
   let query = supabase
     .from('sellers')
     .select(`
@@ -170,6 +171,7 @@ export async function browseSellers({
       reviews (rating)
     `)
     .eq('status', 'approved')
+    .gt('subscription_end', now)
     .order('is_featured', { ascending: false })
     .order('created_at', { ascending: false })
     .range(page * pageSize, (page + 1) * pageSize - 1)

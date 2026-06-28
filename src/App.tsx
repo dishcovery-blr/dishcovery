@@ -14,6 +14,7 @@ import SellerMenuEdit from './pages/seller/SellerMenuEdit'
 import SellerAnnouncements from './pages/seller/SellerAnnouncements'
 import SellerReviews from './pages/seller/SellerReviews'
 import SellerSettings from './pages/seller/SellerSettings'
+import SellerSubscribe from './pages/seller/SellerSubscribe'
 import ConsumerProfile from './pages/consumer/ConsumerProfile'
 import AdminDashboard from './pages/admin/AdminDashboard'
 import AdminSellers from './pages/admin/AdminSellers'
@@ -60,6 +61,7 @@ function AppRoutes() {
         <Route path="/seller/announcements" element={user ? <SellerAnnouncements /> : <Navigate to="/" replace />} />
         <Route path="/seller/reviews" element={user ? <SellerReviews /> : <Navigate to="/" replace />} />
         <Route path="/seller/settings" element={user ? <SellerSettings /> : <Navigate to="/" replace />} />
+        <Route path="/seller/subscribe" element={user ? <SellerSubscribe /> : <Navigate to="/" replace />} />
         <Route path="/consumer/profile" element={user ? <ConsumerProfile /> : <Navigate to="/" replace />} />
         <Route path="/seller/:sellerId" element={user ? <SellerProfilePage /> : <Navigate to="/" replace />} />
         <Route path="/admin" element={user ? <AdminDashboard /> : <Navigate to="/" replace />} />

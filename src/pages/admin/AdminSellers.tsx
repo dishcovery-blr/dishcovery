@@ -30,8 +30,18 @@ export default function AdminSellers() {
   }
 
   async function updateStatus(id: string, status: string) {
-    await supabase.from('sellers').update({ status }).eq('id', id)
-    setSellers(sellers.map(s => s.id === id ? { ...s, status: status as any } : s))
+    const target = sellers.find(s => s.id === id)
+    const updates: Record<string, unknown> = { status }
+
+    // First-time approval: start the 14-day free trial
+    if (status === 'approved' && target && !target.subscription_end) {
+      const trialEnd = new Date()
+      trialEnd.setDate(trialEnd.getDate() + 14)
+      updates.subscription_end = trialEnd.toISOString()
+    }
+
+    await supabase.from('sellers').update(updates).eq('id', id)
+    setSellers(sellers.map(s => s.id === id ? { ...s, ...updates as any } : s))
     await supabase.from('admin_logs').insert({ action: `status_${status}`, target_id: id, target_type: 'seller' })
   }
 

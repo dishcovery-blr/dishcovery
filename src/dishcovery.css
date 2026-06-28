@@ -1588,3 +1588,191 @@ img { max-width: 100%; display: block; }
   font-size: 17px;
   font-weight: 700;
 }
+
+/* ── Seller subscription page ───────────────────────────────── */
+.subscribe-page {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 0 0 40px;
+}
+
+.subscribe-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.subscribe-header h1 {
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.subscribe-status {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  margin: 16px;
+  padding: 16px;
+  border-radius: 14px;
+}
+
+.subscribe-status.expired {
+  background: #fff4f4;
+  border: 1.5px solid #f5c6c6;
+}
+
+.subscribe-status.active {
+  background: #f0faf0;
+  border: 1.5px solid #b8e6b8;
+}
+
+.subscribe-status-icon {
+  font-size: 22px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.subscribe-status strong {
+  font-size: 15px;
+  color: #1a1a1a;
+  display: block;
+  margin-bottom: 3px;
+}
+
+.subscribe-status p {
+  font-size: 13px;
+  color: #555;
+  margin: 0;
+}
+
+.subscribe-plan {
+  margin: 0 16px 16px;
+  border: 1.5px solid #e0e0e0;
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.subscribe-plan-header {
+  background: #1a1a1a;
+  padding: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.subscribe-plan-name {
+  color: #fff;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.subscribe-plan-price {
+  color: #E8552A;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.subscribe-plan-period {
+  font-size: 13px;
+  font-weight: 400;
+  color: rgba(255,255,255,0.6);
+}
+
+.subscribe-plan-features {
+  list-style: none;
+  margin: 0;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.subscribe-plan-features li {
+  font-size: 14px;
+  color: #333;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.subscribe-plan-features li::before {
+  content: '✓';
+  color: #2e7d32;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.subscribe-payment {
+  margin: 0 16px 16px;
+  background: #f8f8f6;
+  border-radius: 14px;
+  padding: 18px;
+}
+
+.subscribe-payment h3 {
+  font-size: 15px;
+  font-weight: 700;
+  margin: 0 0 12px;
+}
+
+.subscribe-pay-line {
+  font-size: 14px;
+  color: #333;
+  margin: 0 0 8px;
+}
+
+.subscribe-upi {
+  background: #1a1a1a;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 600;
+  padding: 12px 16px;
+  border-radius: 10px;
+  text-align: center;
+  letter-spacing: 0.3px;
+  margin-bottom: 6px;
+}
+
+.subscribe-ref {
+  background: #fff;
+  border: 1.5px solid #e0e0e0;
+  font-family: monospace;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: #E8552A;
+  padding: 12px 16px;
+  border-radius: 10px;
+  text-align: center;
+  margin-bottom: 14px;
+}
+
+.subscribe-hint {
+  font-size: 13px;
+  color: #666;
+  margin: 0 0 16px;
+  line-height: 1.5;
+}
+
+.subscribe-email-btn {
+  display: block;
+  background: #1a1a1a;
+  color: #fff;
+  text-align: center;
+  padding: 14px;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.subscribe-footer-note {
+  margin: 0 16px;
+  font-size: 13px;
+  color: #999;
+  text-align: center;
+  line-height: 1.5;
+}

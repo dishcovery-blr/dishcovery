@@ -23,6 +23,7 @@ export default function SellerProfileEdit() {
   const [error, setError] = useState('')
   const [uploadingAvatar, setUploadingAvatar] = useState(false)
   const [uploadingCover, setUploadingCover] = useState(false)
+  const [uploadingGroupPhoto, setUploadingGroupPhoto] = useState(false)
   const [activeDays, setActiveDays] = useState<string[]>([])
   const [openTime, setOpenTime] = useState('9am')
   const [closeTime, setCloseTime] = useState('8pm')
@@ -31,6 +32,7 @@ export default function SellerProfileEdit() {
   const [form, setForm] = useState({
     display_name: '',
     bio: '',
+    team_bio: '',
     whatsapp_number: '',
     instagram_url: '',
     location_text: '',
@@ -46,6 +48,7 @@ export default function SellerProfileEdit() {
       setForm({
         display_name: seller.display_name ?? '',
         bio: seller.bio ?? '',
+        team_bio: seller.team_bio ?? '',
         whatsapp_number: seller.whatsapp_number ?? '',
         instagram_url: seller.instagram_url ?? '',
         location_text: seller.location_text ?? '',
@@ -96,6 +99,7 @@ export default function SellerProfileEdit() {
       .from('sellers')
       .update({
         ...form,
+        team_bio: form.team_bio || null,
         operating_hours: buildHoursString() || null,
         fssai_status: form.fssai_number && form.fssai_number !== seller.fssai_number
           ? 'in_progress' : seller.fssai_status,
@@ -111,15 +115,15 @@ export default function SellerProfileEdit() {
     setSaving(false)
   }
 
-  async function uploadImage(file: File, type: 'avatar' | 'cover') {
+  async function uploadImage(file: File, type: 'avatar' | 'cover' | 'group') {
     if (!seller) return
-    const setter = type === 'avatar' ? setUploadingAvatar : setUploadingCover
+    const setter = type === 'avatar' ? setUploadingAvatar : type === 'cover' ? setUploadingCover : setUploadingGroupPhoto
     setter(true)
     const ext = file.name.split('.').pop()
     const path = `${seller.auth_user_id}/${type}.${ext}`
     const { error: uploadErr } = await supabase.storage.from('seller-media').upload(path, file, { upsert: true })
     if (!uploadErr) {
-      const field = type === 'avatar' ? 'avatar_url' : 'cover_photo_url'
+      const field = type === 'avatar' ? 'avatar_url' : type === 'cover' ? 'cover_photo_url' : 'group_photo_url'
       await supabase.from('sellers').update({ [field]: path }).eq('id', seller.id)
       await refreshSeller()
     }
@@ -130,6 +134,7 @@ export default function SellerProfileEdit() {
 
   const avatarUrl = seller.avatar_url ? `${import.meta.env.VITE_SUPABASE_URL}/storage/v1/object/public/seller-media/${seller.avatar_url}` : null
   const coverUrl = seller.cover_photo_url ? `${import.meta.env.VITE_SUPABASE_URL}/storage/v1/object/public/seller-media/${seller.cover_photo_url}` : null
+  const groupPhotoUrl = seller.group_photo_url ? `${import.meta.env.VITE_SUPABASE_URL}/storage/v1/object/public/seller-media/${seller.group_photo_url}` : null
 
   return (
     <div className="editor-page">
@@ -175,15 +180,39 @@ export default function SellerProfileEdit() {
           <div className="form-group">
             <label>Bio</label>
             <textarea
-  placeholder="Tell customers what makes your food special…"
-  value={form.bio}
-  onChange={e => e.target.value.length <= 200 && setForm({ ...form, bio: e.target.value })}
-  rows={3}
-  maxLength={200}
-/>
-<span className="field-hint" style={{ textAlign: 'right', display: 'block' }}>
-  {(form.bio ?? '').length}/200
-</span>
+              placeholder="Tell customers what makes your food special…"
+              value={form.bio}
+              onChange={e => e.target.value.length <= 200 && setForm({ ...form, bio: e.target.value })}
+              rows={3}
+              maxLength={200}
+            />
+            <span className="field-hint" style={{ textAlign: 'right', display: 'block' }}>
+              {(form.bio ?? '').length}/200
+            </span>
+          </div>
+          <div className="form-group">
+            <label>About the team</label>
+            <textarea
+              placeholder="Introduce yourself and your team…"
+              value={form.team_bio}
+              onChange={e => e.target.value.length <= 300 && setForm({ ...form, team_bio: e.target.value })}
+              rows={3}
+              maxLength={300}
+            />
+            <span className="field-hint" style={{ textAlign: 'right', display: 'block' }}>
+              {(form.team_bio ?? '').length}/300
+            </span>
+          </div>
+          <div className="form-group">
+            <label>Team photo</label>
+            <label className="group-photo-upload">
+              {groupPhotoUrl
+                ? <img src={groupPhotoUrl} alt="Team photo" className="group-photo-preview" />
+                : <div className="group-photo-placeholder"><span>📷</span><span>Upload a team or kitchen photo</span></div>
+              }
+              <input type="file" accept="image/*" hidden onChange={e => e.target.files?.[0] && uploadImage(e.target.files[0], 'group')} />
+            </label>
+            {uploadingGroupPhoto && <span className="field-hint">Uploading…</span>}
           </div>
           <div className="form-group checkbox-group">
             <label>

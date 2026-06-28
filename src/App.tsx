@@ -11,7 +11,9 @@ import SellerDashboard from './pages/seller/SellerDashboard'
 import SellerProfileEdit from './pages/seller/SellerProfileEdit'
 import SellerGallery from './pages/seller/SellerGallery'
 import SellerMenuEdit from './pages/seller/SellerMenuEdit'
-import SellerOffers from './pages/seller/SellerOffers'
+import SellerAnnouncements from './pages/seller/SellerAnnouncements'
+import SellerReviews from './pages/seller/SellerReviews'
+import SellerSettings from './pages/seller/SellerSettings'
 import AdminDashboard from './pages/admin/AdminDashboard'
 import AdminSellers from './pages/admin/AdminSellers'
 import AdminFssai from './pages/admin/AdminFssai'
@@ -53,7 +55,9 @@ function AppRoutes() {
         <Route path="/seller/profile" element={user ? <SellerProfileEdit /> : <Navigate to="/" replace />} />
         <Route path="/seller/gallery" element={user ? <SellerGallery /> : <Navigate to="/" replace />} />
         <Route path="/seller/menu" element={user ? <SellerMenuEdit /> : <Navigate to="/" replace />} />
-        <Route path="/seller/offers" element={user ? <SellerOffers /> : <Navigate to="/" replace />} />
+        <Route path="/seller/announcements" element={user ? <SellerAnnouncements /> : <Navigate to="/" replace />} />
+        <Route path="/seller/reviews" element={user ? <SellerReviews /> : <Navigate to="/" replace />} />
+        <Route path="/seller/settings" element={user ? <SellerSettings /> : <Navigate to="/" replace />} />
         <Route path="/seller/:sellerId" element={user ? <SellerProfilePage /> : <Navigate to="/" replace />} />
         <Route path="/admin" element={user ? <AdminDashboard /> : <Navigate to="/" replace />} />
         <Route path="/admin/sellers" element={user ? <AdminSellers /> : <Navigate to="/" replace />} />

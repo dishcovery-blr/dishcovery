@@ -32,6 +32,8 @@ export interface Seller {
   subscription_end: string | null
   profile_views: number
   whatsapp_taps: number
+  team_bio: string | null
+  group_photo_url: string | null
   is_featured: boolean
   created_at: string
   updated_at: string
@@ -56,6 +58,7 @@ export interface MenuItem {
   is_available: boolean
   is_veg: boolean
   dietary_flags: string[]
+  flavour: string | null
   sort_order: number
   created_at: string
   updated_at: string
@@ -97,6 +100,7 @@ export interface Review {
   consumer_id: string
   rating: number
   body: string | null
+  seller_reply: string | null
   created_at: string
 }
 

@@ -6,7 +6,7 @@ import { supabase } from '../../lib/supabase'
 export default function SellerDashboard() {
   const { seller, loading } = useAuth()
   const navigate = useNavigate()
-  const [stats, setStats] = useState({ views: 0, taps: 0, menuItems: 0, activeOffers: 0 })
+  const [stats, setStats] = useState({ views: 0, taps: 0, menuItems: 0, avgRating: 0 })
 
   useEffect(() => {
     if (seller) loadStats()
@@ -14,15 +14,17 @@ export default function SellerDashboard() {
 
   async function loadStats() {
     if (!seller) return
-    const [menuRes, offersRes] = await Promise.all([
+    const [menuRes, reviewsRes] = await Promise.all([
       supabase.from('menu_items').select('id', { count: 'exact' }).eq('seller_id', seller.id),
-      supabase.from('offers').select('id', { count: 'exact' }).eq('seller_id', seller.id).eq('is_active', true).gt('expires_at', new Date().toISOString()),
+      supabase.from('reviews').select('rating').eq('seller_id', seller.id),
     ])
+    const ratings = reviewsRes.data ?? []
+    const avg = ratings.length ? Math.round(ratings.reduce((s, r) => s + r.rating, 0) / ratings.length * 10) / 10 : 0
     setStats({
       views: seller.profile_views ?? 0,
       taps: seller.whatsapp_taps ?? 0,
       menuItems: menuRes.count ?? 0,
-      activeOffers: offersRes.count ?? 0,
+      avgRating: avg,
     })
   }
 
@@ -81,8 +83,8 @@ export default function SellerDashboard() {
           <span className="dash-stat-label">Menu items</span>
         </div>
         <div className="dash-stat">
-          <span className="dash-stat-val">{stats.activeOffers}</span>
-          <span className="dash-stat-label">Active offers</span>
+          <span className="dash-stat-val">{stats.avgRating > 0 ? stats.avgRating : '—'}</span>
+          <span className="dash-stat-label">Avg rating</span>
         </div>
       </div>
 
@@ -103,10 +105,20 @@ export default function SellerDashboard() {
           <span className="dash-action-label">Menu</span>
           <span className="dash-action-desc">Items, prices, categories</span>
         </button>
-        <button className="dash-action" onClick={() => navigate('/seller/offers')}>
-          <span className="dash-action-icon">🏷</span>
-          <span className="dash-action-label">Offers</span>
-          <span className="dash-action-desc">Create limited-time deals</span>
+        <button className="dash-action" onClick={() => navigate('/seller/announcements')}>
+          <span className="dash-action-icon">📣</span>
+          <span className="dash-action-label">Announcements</span>
+          <span className="dash-action-desc">Post offers and updates</span>
+        </button>
+        <button className="dash-action" onClick={() => navigate('/seller/reviews')}>
+          <span className="dash-action-icon">⭐</span>
+          <span className="dash-action-label">Reviews</span>
+          <span className="dash-action-desc">View and reply to feedback</span>
+        </button>
+        <button className="dash-action" onClick={() => navigate('/seller/settings')}>
+          <span className="dash-action-icon">⚙️</span>
+          <span className="dash-action-label">Settings</span>
+          <span className="dash-action-desc">Password, email, notifications</span>
         </button>
       </div>
     </div>

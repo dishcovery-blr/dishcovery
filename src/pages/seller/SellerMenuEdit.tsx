@@ -147,6 +147,9 @@ export default function SellerMenuEdit() {
                 )}
                 <div className="menu-item-details">
                   <span className="menu-item-name">{item.name}</span>
+                  {item.flavour && (
+                    <span className="menu-item-flags-inline" style={{ color: '#888' }}>{item.flavour}</span>
+                  )}
                   {item.dietary_flags?.length > 0 && (
                     <span className="menu-item-flags-inline">{item.dietary_flags.join(' · ')}</span>
                   )}
@@ -178,7 +181,7 @@ function AddItemForm({ onSave, onCancel }: {
   onSave: (item: Partial<MenuItem>, photoFile?: File) => void
   onCancel: () => void
 }) {
-  const [form, setForm] = useState({ name: '', description: '', price: '', is_veg: true, is_available: true, dietary_flags: [] as string[] })
+  const [form, setForm] = useState({ name: '', description: '', price: '', flavour: '', is_veg: true, is_available: true, dietary_flags: [] as string[] })
   const [photoFile, setPhotoFile] = useState<File | null>(null)
   const [photoPreview, setPhotoPreview] = useState<string | null>(null)
 
@@ -196,7 +199,7 @@ function AddItemForm({ onSave, onCancel }: {
 
   function handleSave() {
     if (!form.name.trim() || !form.price) return
-    onSave({ ...form, price: Number(form.price) }, photoFile ?? undefined)
+    onSave({ ...form, price: Number(form.price), flavour: form.flavour.trim() || null }, photoFile ?? undefined)
   }
 
   return (
@@ -216,6 +219,7 @@ function AddItemForm({ onSave, onCancel }: {
             <button className={`veg-btn ${!form.is_veg ? 'nonveg' : ''}`} onClick={() => setForm({ ...form, is_veg: false })}>🔴 Non-veg</button>
           </div>
           <input type="text" placeholder="Item name *" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} autoFocus />
+          <input type="text" placeholder="Flavours (e.g. Chocolate, Vanilla, Strawberry)" value={form.flavour} onChange={e => setForm({ ...form, flavour: e.target.value })} />
           <input type="text" placeholder="Description (optional)" value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} />
           <input type="number" placeholder="Price (₹) *" value={form.price} onChange={e => setForm({ ...form, price: e.target.value })} min={0} />
         </div>

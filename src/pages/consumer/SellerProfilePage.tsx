@@ -178,6 +178,9 @@ export default function SellerProfilePage() {
         </div>
       )}
 
+      {/* Name above cover */}
+      <h1 className="profile-name-above">{seller.display_name}</h1>
+
       {/* Cover */}
       <div className="profile-cover">
         {seller.cover_photo_url
@@ -186,7 +189,7 @@ export default function SellerProfilePage() {
         }
       </div>
 
-      {/* Avatar + name + bio */}
+      {/* Avatar + bio below cover */}
       <div className="profile-hero">
         <div className="profile-avatar">
           {seller.avatar_url
@@ -194,10 +197,7 @@ export default function SellerProfilePage() {
             : <span>{seller.display_name.charAt(0)}</span>
           }
         </div>
-        <div className="profile-hero-text">
-          <h1 className="profile-name">{seller.display_name}</h1>
-          {seller.bio && <p className="profile-bio-short">{seller.bio}</p>}
-        </div>
+        {seller.bio && <p className="profile-bio-short">{seller.bio}</p>}
       </div>
 
       {/* WhatsApp button */}

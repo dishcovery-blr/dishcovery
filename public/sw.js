@@ -1,4 +1,4 @@
-const CACHE_NAME = 'dishcovery-v1'
+const CACHE_NAME = 'dishcovery-v2'
 const STATIC_ASSETS = ['/', '/browse']
 
 self.addEventListener('install', event => {

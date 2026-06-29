@@ -44,8 +44,11 @@ export default function BrowsePage() {
 
   useEffect(() => {
     loadBoosts()
-    if (consumer) loadSaves()
-  }, [consumer])
+  }, [])
+
+  useEffect(() => {
+    if (consumer?.id) loadSaves()
+  }, [consumer?.id])
 
   useEffect(() => {
     if (browseBanners.length <= 1) return
@@ -72,8 +75,10 @@ export default function BrowsePage() {
 
   async function loadSaves() {
     if (!consumer) return
-    const { data } = await supabase.from('saves').select('seller_id').eq('consumer_id', consumer.id)
-    setSavedIds(new Set((data ?? []).map((s: any) => s.seller_id)))
+    try {
+      const { data } = await supabase.from('saves').select('seller_id').eq('consumer_id', consumer.id)
+      setSavedIds(new Set((data ?? []).map((s: any) => s.seller_id)))
+    } catch { /* non-fatal */ }
   }
 
   async function toggleSave(e: React.MouseEvent, sellerId: string) {

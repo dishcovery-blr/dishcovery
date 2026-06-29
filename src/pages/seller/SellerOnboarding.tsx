@@ -148,7 +148,7 @@ export default function SellerOnboarding() {
               >
                 <span className="type-icon">🍛</span>
                 <strong>Home Cook</strong>
-                <span>I take orders occasionally from my home kitchen</span>
+                <span>I take occasional orders from my home kitchen</span>
               </button>
             </div>
             <button className="btn-primary" onClick={() => setStep('details')}>Continue</button>

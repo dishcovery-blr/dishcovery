@@ -129,7 +129,7 @@ img { max-width: 100%; display: block; }
 .search-box { flex: 1; display: flex; align-items: center; gap: 8px; background: #fff; border: 1px solid #ddd; border-radius: 10px; padding: 0 12px; }
 .search-box input { flex: 1; border: none; outline: none; font-size: 14px; padding: 10px 0; background: transparent; }
 .filter-toggle-btn { background: #fff; border: 1px solid #ddd; border-radius: 10px; padding: 10px 14px; font-size: 13px; color: #444; }
-.type-toggle { display: flex; gap: 8px; margin-bottom: 14px; }
+.type-toggle { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
 .type-btn { background: #fff; border: 1px solid #ddd; border-radius: 20px; padding: 6px 16px; font-size: 13px; color: #555; }
 .type-btn.active { background: #1D9E75; color: #fff; border-color: #1D9E75; }
 .filters-panel { background: #fff; border: 1px solid #eee; border-radius: 12px; padding: 16px; margin-bottom: 16px; }

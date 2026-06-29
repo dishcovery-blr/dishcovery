@@ -28,7 +28,6 @@ export default function BrowsePage() {
   const [search, setSearch] = useState('')
   const [locationFilter, setLocationFilter] = useState('')
   const [showLocationInput, setShowLocationInput] = useState(false)
-  const [sellerType, setSellerType] = useState<'all' | 'baker' | 'home_cook'>('all')
   const [cuisineFilter, setCuisineFilter] = useState<string[]>([])
   const [dietaryFilter, setDietaryFilter] = useState<string[]>([])
   const [showFilters, setShowFilters] = useState(false)
@@ -40,7 +39,7 @@ export default function BrowsePage() {
 
   useEffect(() => {
     loadSellers()
-  }, [sellerType, cuisineFilter, dietaryFilter, locationFilter])
+  }, [cuisineFilter, dietaryFilter, locationFilter])
 
   useEffect(() => {
     loadBoosts()
@@ -102,7 +101,6 @@ export default function BrowsePage() {
     setLoading(true)
     try {
       const { data } = await browseSellers({
-        sellerType: sellerType === 'all' ? undefined : sellerType,
         cuisineTags: cuisineFilter.length > 0 ? cuisineFilter : undefined,
         dietaryTags: dietaryFilter.length > 0 ? dietaryFilter : undefined,
         searchQuery: search || undefined,
@@ -238,20 +236,7 @@ export default function BrowsePage() {
         </button>
       </div>
 
-      {/* Type toggle */}
-      <div className="type-toggle">
-        {(['all', 'baker', 'home_cook'] as const).map(t => (
-          <button
-            key={t}
-            className={`type-btn ${sellerType === t ? 'active' : ''}`}
-            onClick={() => setSellerType(t)}
-          >
-            {t === 'all' ? 'All' : t === 'baker' ? 'Bakers' : 'Home Cooks'}
-          </button>
-        ))}
-      </div>
-
-      {/* Filters panel */}
+{/* Filters panel */}
       {showFilters && (
         <div className="filters-panel">
           <div className="filter-group">

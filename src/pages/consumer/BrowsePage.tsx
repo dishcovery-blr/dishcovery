@@ -36,6 +36,7 @@ export default function BrowsePage() {
   const [bannerIdx, setBannerIdx] = useState(0)
   const [splash, setSplash] = useState<BoostBanner | null>(null)
   const [splashDismissed, setSplashDismissed] = useState(false)
+  const [savedIds, setSavedIds] = useState<Set<string>>(new Set())
 
   useEffect(() => {
     loadSellers()
@@ -43,7 +44,8 @@ export default function BrowsePage() {
 
   useEffect(() => {
     loadBoosts()
-  }, [])
+    if (consumer) loadSaves()
+  }, [consumer])
 
   useEffect(() => {
     if (browseBanners.length <= 1) return
@@ -65,6 +67,24 @@ export default function BrowsePage() {
     setBrowseBanners(banners)
     if (splashes.length > 0 && !sessionStorage.getItem('splash_shown')) {
       setSplash(splashes[Math.floor(Math.random() * splashes.length)])
+    }
+  }
+
+  async function loadSaves() {
+    if (!consumer) return
+    const { data } = await supabase.from('saves').select('seller_id').eq('consumer_id', consumer.id)
+    setSavedIds(new Set((data ?? []).map((s: any) => s.seller_id)))
+  }
+
+  async function toggleSave(e: React.MouseEvent, sellerId: string) {
+    e.stopPropagation()
+    if (!consumer) return
+    if (savedIds.has(sellerId)) {
+      await supabase.from('saves').delete().eq('consumer_id', consumer.id).eq('seller_id', sellerId)
+      setSavedIds(prev => { const n = new Set(prev); n.delete(sellerId); return n })
+    } else {
+      await supabase.from('saves').insert({ consumer_id: consumer.id, seller_id: sellerId })
+      setSavedIds(prev => new Set([...prev, sellerId]))
     }
   }
 
@@ -278,7 +298,7 @@ export default function BrowsePage() {
       ) : (
         <div className="seller-grid">
           {filtered.map(seller => (
-            <SellerCard key={seller.id} seller={seller} onClick={() => navigate(`/seller/${seller.id}`)} />
+            <SellerCard key={seller.id} seller={seller} saved={savedIds.has(seller.id)} onSave={e => toggleSave(e, seller.id)} onClick={() => navigate(`/seller/${seller.id}`)} />
           ))}
         </div>
       )}
@@ -286,7 +306,7 @@ export default function BrowsePage() {
   )
 }
 
-function SellerCard({ seller, onClick }: { seller: SellerCard; onClick: () => void }) {
+function SellerCard({ seller, saved, onSave, onClick }: { seller: SellerCard; saved: boolean; onSave: (e: React.MouseEvent) => void; onClick: () => void }) {
   const coverUrl = seller.cover_photo_url ? `${STORAGE_URL}/${seller.cover_photo_url}` : null
   const avatarUrl = seller.avatar_url ? `${STORAGE_URL}/${seller.avatar_url}` : null
 
@@ -301,6 +321,9 @@ function SellerCard({ seller, onClick }: { seller: SellerCard; onClick: () => vo
         <span className={`type-badge ${seller.seller_type}`}>
           {seller.seller_type === 'home_cook' ? 'Home Cook' : 'Baker'}
         </span>
+        <button className={`card-save-btn ${saved ? 'saved' : ''}`} onClick={onSave} aria-label={saved ? 'Unsave' : 'Save'}>
+          {saved ? '♥' : '♡'}
+        </button>
       </div>
 
       <div className="card-avatar">

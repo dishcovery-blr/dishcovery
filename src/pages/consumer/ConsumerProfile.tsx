@@ -5,7 +5,7 @@ import { supabase, signOut } from '../../lib/supabase'
 
 const STORAGE_URL = `${import.meta.env.VITE_SUPABASE_URL}/storage/v1/object/public/seller-media`
 
-type Section = 'settings' | 'favourites' | 'reviews' | null
+type Section = 'settings' | 'favourites' | 'orders' | 'reviews' | null
 
 interface SavedSeller {
   seller_id: string
@@ -27,6 +27,12 @@ interface MyReview {
   sellers: { id: string; display_name: string; avatar_url: string | null }
 }
 
+interface OrderTap {
+  seller_id: string
+  tapped_at: string
+  sellers: { id: string; display_name: string; avatar_url: string | null; location_text: string | null }
+}
+
 export default function ConsumerProfile() {
   const navigate = useNavigate()
   const { user, consumer } = useAuth()
@@ -42,13 +48,14 @@ export default function ConsumerProfile() {
 
   // Data
   const [favourites, setFavourites] = useState<SavedSeller[]>([])
+  const [orders, setOrders] = useState<OrderTap[]>([])
   const [reviews, setReviews] = useState<MyReview[]>([])
-  const [dataLoaded, setDataLoaded] = useState<Section>(null)
+  const [dataLoaded, setDataLoaded] = useState<Set<Section>>(new Set())
 
   async function loadSection(section: Section) {
     if (section === openSection) { setOpenSection(null); return }
     setOpenSection(section)
-    if (section === dataLoaded) return
+    if (dataLoaded.has(section)) return
 
     if (section === 'favourites' && consumer) {
       const { data } = await supabase
@@ -57,7 +64,17 @@ export default function ConsumerProfile() {
         .eq('consumer_id', consumer.id)
         .order('saved_at', { ascending: false })
       setFavourites((data ?? []) as unknown as SavedSeller[])
-      setDataLoaded('favourites')
+      setDataLoaded(prev => new Set([...prev, 'favourites']))
+    }
+
+    if (section === 'orders' && consumer) {
+      const { data } = await supabase
+        .from('consumer_whatsapp_taps')
+        .select('seller_id, tapped_at, sellers(id, display_name, avatar_url, location_text)')
+        .eq('consumer_id', consumer.id)
+        .order('tapped_at', { ascending: false })
+      setOrders((data ?? []) as unknown as OrderTap[])
+      setDataLoaded(prev => new Set([...prev, 'orders']))
     }
 
     if (section === 'reviews' && consumer) {
@@ -67,7 +84,7 @@ export default function ConsumerProfile() {
         .eq('consumer_id', consumer.id)
         .order('created_at', { ascending: false })
       setReviews((data ?? []) as unknown as MyReview[])
-      setDataLoaded('reviews')
+      setDataLoaded(prev => new Set([...prev, 'reviews']))
     }
   }
 
@@ -180,12 +197,38 @@ export default function ConsumerProfile() {
           )}
         </div>
 
-        {/* Past Orders */}
+        {/* Order history */}
         <div className="cp-section">
-          <button className="cp-section-header cp-disabled">
-            <span>Past Orders</span>
-            <span className="cp-coming-soon">Coming soon</span>
+          <button className="cp-section-header" onClick={() => loadSection('orders')}>
+            <span>Order history</span>
+            <span className="cp-chevron">{openSection === 'orders' ? '▲' : '▼'}</span>
           </button>
+          {openSection === 'orders' && (
+            <div className="cp-section-body">
+              {orders.length === 0 ? (
+                <p className="cp-placeholder-text">No orders yet. Tap "Order on WhatsApp" on any seller page and it'll show up here.</p>
+              ) : (
+                <div className="cp-seller-list">
+                  {orders.map(o => {
+                    const s = o.sellers
+                    const avatarUrl = s.avatar_url ? `${STORAGE_URL}/${s.avatar_url}` : null
+                    return (
+                      <div key={o.seller_id} className="cp-seller-row" onClick={() => navigate(`/seller/${s.id}`)}>
+                        <div className="cp-seller-avatar">
+                          {avatarUrl ? <img src={avatarUrl} alt={s.display_name} /> : <span>{s.display_name.charAt(0)}</span>}
+                        </div>
+                        <div className="cp-seller-info">
+                          <p className="cp-seller-name">{s.display_name}</p>
+                          <p className="cp-seller-loc">Last ordered {new Date(o.tapped_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</p>
+                        </div>
+                        <span className="cp-chevron">›</span>
+                      </div>
+                    )
+                  })}
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         {/* My Reviews */}

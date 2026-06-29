@@ -36,6 +36,7 @@ export default function SellerProfilePage() {
   const [offerPopup, setOfferPopup] = useState<Offer | null>(null)
   const [popupDismissed, setPopupDismissed] = useState(false)
   const [cart, setCart] = useState<CartItem[]>([])
+  const [saved, setSaved] = useState(false)
 
   useEffect(() => {
     if (sellerId) {
@@ -43,6 +44,27 @@ export default function SellerProfilePage() {
       trackProfileView(sellerId)
     }
   }, [sellerId])
+
+  useEffect(() => {
+    if (sellerId && consumer) loadSaveStatus()
+  }, [sellerId, consumer])
+
+  async function loadSaveStatus() {
+    if (!consumer || !sellerId) return
+    const { data } = await supabase.from('saves').select('seller_id').eq('consumer_id', consumer.id).eq('seller_id', sellerId).maybeSingle()
+    setSaved(!!data)
+  }
+
+  async function toggleSave() {
+    if (!consumer || !sellerId) return
+    if (saved) {
+      await supabase.from('saves').delete().eq('consumer_id', consumer.id).eq('seller_id', sellerId)
+      setSaved(false)
+    } else {
+      await supabase.from('saves').insert({ consumer_id: consumer.id, seller_id: sellerId })
+      setSaved(true)
+    }
+  }
 
   function computeAvg(list: ReviewWithConsumer[]) {
     if (!list.length) return 0
@@ -139,6 +161,12 @@ export default function SellerProfilePage() {
   function handleWhatsappTap() {
     if (!seller) return
     trackWhatsappTap(seller.id)
+    // Log per-consumer WhatsApp tap for order history
+    if (consumer) {
+      supabase.from('consumer_whatsapp_taps')
+        .upsert({ consumer_id: consumer.id, seller_id: seller.id, tapped_at: new Date().toISOString() }, { onConflict: 'consumer_id,seller_id' })
+        .then(() => {})
+    }
     const text = cart.length > 0 ? buildCartMessage() : `Hi, I found you on Dishcovery and would like to place an order!`
     window.open(`https://wa.me/${seller.whatsapp_number}?text=${encodeURIComponent(text)}`, '_blank')
   }
@@ -187,6 +215,11 @@ export default function SellerProfilePage() {
           ? <img src={getUrl(seller.cover_photo_url)} alt="Cover" className="cover-img" />
           : <div className="cover-placeholder" />
         }
+        {role === 'consumer' && (
+          <button className={`profile-save-btn ${saved ? 'saved' : ''}`} onClick={toggleSave} aria-label={saved ? 'Unsave' : 'Save'}>
+            {saved ? '♥' : '♡'}
+          </button>
+        )}
       </div>
 
       {/* Avatar + bio below cover */}

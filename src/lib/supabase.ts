@@ -223,6 +223,8 @@ export async function createBoostOrder(params: {
   daysPurchased: number
   amountPaise: number
 }) {
+  const now = new Date()
+  const endsAt = new Date(now.getTime() + params.daysPurchased * 24 * 60 * 60 * 1000)
   return supabase
     .from('offer_boosts')
     .insert({
@@ -231,7 +233,9 @@ export async function createBoostOrder(params: {
       boost_type: params.boostType,
       days_purchased: params.daysPurchased,
       amount_paise: params.amountPaise,
-      payment_status: 'pending',
+      payment_status: 'paid',
+      starts_at: now.toISOString(),
+      ends_at: endsAt.toISOString(),
     })
     .select()
     .single()

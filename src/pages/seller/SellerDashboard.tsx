@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
-import { supabase } from '../../lib/supabase'
+import { supabase, signOut } from '../../lib/supabase'
 
 export default function SellerDashboard() {
   const { seller, loading } = useAuth()
@@ -121,6 +121,13 @@ export default function SellerDashboard() {
           <span className="dash-action-desc">Password, email, notifications</span>
         </button>
       </div>
+
+      <button
+        className="dash-logout-btn"
+        onClick={async () => { await signOut(); navigate('/login', { replace: true }) }}
+      >
+        Log out
+      </button>
     </div>
   )
 }

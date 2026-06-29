@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { supabase, signOut } from '../../lib/supabase'
+import { supabase } from '../../lib/supabase'
 
 export default function SellerSettings() {
   const navigate = useNavigate()
@@ -81,16 +81,6 @@ export default function SellerSettings() {
         <div className="form-section">
           <h2>Notifications</h2>
           <p className="section-hint">Notification preferences coming soon.</p>
-        </div>
-
-        <div className="form-section">
-          <button
-            className="cp-logout"
-            style={{ width: '100%', textAlign: 'left' }}
-            onClick={async () => { await signOut(); navigate('/login', { replace: true }) }}
-          >
-            Log out
-          </button>
         </div>
 
       </div>

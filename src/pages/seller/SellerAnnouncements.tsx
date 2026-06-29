@@ -43,6 +43,28 @@ function BrowseBannerPreview({ title, imageUrl, sellerName, avatarUrl }: {
   )
 }
 
+function ProfileBannerPreview({ title, body, imageUrl, noExpiry, expiresAt }: {
+  title: string; body: string; imageUrl: string | null; noExpiry: boolean; expiresAt: string
+}) {
+  const expiry = noExpiry ? 'No expiry'
+    : expiresAt ? `Until ${new Date(expiresAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}`
+    : 'Set an expiry date'
+  return (
+    <div className="preview-wrap">
+      <p className="preview-label">Preview · Popup on your seller page</p>
+      <div className="preview-offer-popup">
+        {imageUrl && <img src={imageUrl} alt="" className="preview-offer-popup-img" />}
+        <div className="preview-offer-popup-body">
+          <p className="preview-offer-popup-title">{title || 'Your offer title here'}</p>
+          {body && <p className="preview-offer-popup-text">{body}</p>}
+          <p className="preview-offer-popup-expiry">{expiry}</p>
+          <div className="preview-offer-popup-btn">Order on WhatsApp →</div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 function SplashPreview({ title, body, imageUrl, sellerName, avatarUrl }: {
   title: string; body: string; imageUrl: string | null; sellerName: string; avatarUrl: string | null
 }) {
@@ -86,6 +108,8 @@ export default function SellerAnnouncements() {
   const [formTier, setFormTier] = useState<FormTier>('tier1')
   const [formDays, setFormDays] = useState(1)
 
+  const [editingOffer, setEditingOffer] = useState<OfferWithBoosts | null>(null)
+
   const [showBoostFor, setShowBoostFor] = useState<string | null>(null)
   const [boostForm, setBoostForm] = useState<{ type: 'browse_banner' | 'splash'; days: number }>({ type: 'browse_banner', days: 1 })
   const [requestingBoost, setRequestingBoost] = useState(false)
@@ -120,6 +144,25 @@ export default function SellerAnnouncements() {
     setShowForm(false)
     setPosterFile(null)
     setPosterPreview(null)
+    setEditingOffer(null)
+  }
+
+  function openEdit(offer: OfferWithBoosts) {
+    const boost = activeBoost(offer)
+    const tier: FormTier = boost ? (boost.boost_type as 'browse_banner' | 'splash') : 'tier1'
+    const isPermanent = new Date(offer.expires_at).getFullYear() > new Date().getFullYear() + 5
+    setEditingOffer(offer)
+    setForm({
+      title: offer.title,
+      body: offer.body ?? '',
+      expires_at: isPermanent ? '' : new Date(offer.expires_at).toISOString().slice(0, 16),
+      noExpiry: isPermanent,
+    })
+    setPosterFile(null)
+    setPosterPreview(offer.photo_urls?.[0] ? getUrl(offer.photo_urls[0]) : null)
+    setFormTier(tier)
+    setFormDays(boost?.days_purchased ?? 1)
+    setShowForm(true)
   }
 
   async function create() {
@@ -161,6 +204,41 @@ export default function SellerAnnouncements() {
       setAnnouncements([withBoosts, ...announcements])
     }
 
+    closeForm()
+    setSaving(false)
+  }
+
+  async function update() {
+    if (!seller || !editingOffer || !form.title) return
+    const isBoost = formTier !== 'tier1'
+    if (!isBoost && !form.noExpiry && !form.expires_at) return
+    setSaving(true)
+
+    // Keep existing photo unless user picked a new file or cleared the preview
+    let photo_urls: string[] = posterPreview
+      ? (posterFile ? [] : (editingOffer.photo_urls ?? []))
+      : []
+
+    if (posterFile) {
+      setUploading(true)
+      const ext = posterFile.name.split('.').pop()
+      const path = `${seller.auth_user_id}/offers/${Date.now()}.${ext}`
+      const { error: uploadErr } = await supabase.storage.from('seller-media').upload(path, posterFile)
+      if (!uploadErr) photo_urls = [path]
+      setUploading(false)
+    }
+
+    const expires_at = (form.noExpiry || isBoost) ? FAR_FUTURE() : new Date(form.expires_at).toISOString()
+    const { data } = await supabase
+      .from('offers')
+      .update({ title: form.title, body: form.body || null, expires_at, photo_urls })
+      .eq('id', editingOffer.id)
+      .select('*, offer_boosts(*)')
+      .single()
+
+    if (data) {
+      setAnnouncements(prev => prev.map(a => a.id === editingOffer.id ? data as OfferWithBoosts : a))
+    }
     closeForm()
     setSaving(false)
   }
@@ -230,41 +308,48 @@ export default function SellerAnnouncements() {
 
         {showForm && (
           <div className="offer-form">
-            <h2>New announcement</h2>
+            <h2>{editingOffer ? 'Edit announcement' : 'New announcement'}</h2>
 
-            {/* Tier selector */}
-            <div className="form-group">
-              <label>Visibility tier</label>
-              <div className="tier-selector">
-                <button
-                  className={`tier-card ${formTier === 'tier1' ? 'selected' : ''}`}
-                  onClick={() => setFormTier('tier1')}
-                >
-                  <span className="tier-card-badge">Tier 1</span>
-                  <span className="tier-card-name">Profile Banner</span>
-                  <span className="tier-card-price tier-free">Free</span>
-                  <span className="tier-card-desc">Permanent banner on your seller page</span>
-                </button>
-                <button
-                  className={`tier-card ${formTier === 'browse_banner' ? 'selected' : ''}`}
-                  onClick={() => setFormTier('browse_banner')}
-                >
-                  <span className="tier-card-badge">Tier 2</span>
-                  <span className="tier-card-name">Browse Banner</span>
-                  <span className="tier-card-price">₹500/day</span>
-                  <span className="tier-card-desc">Rotating banner on the browse page</span>
-                </button>
-                <button
-                  className={`tier-card ${formTier === 'splash' ? 'selected' : ''}`}
-                  onClick={() => setFormTier('splash')}
-                >
-                  <span className="tier-card-badge">Tier 3</span>
-                  <span className="tier-card-name">Splash Screen</span>
-                  <span className="tier-card-price">₹1,000/day</span>
-                  <span className="tier-card-desc">Full-screen when consumers open the app</span>
-                </button>
+            {/* Tier selector — hidden when editing (tier is locked) */}
+            {!editingOffer ? (
+              <div className="form-group">
+                <label>Visibility tier</label>
+                <div className="tier-selector">
+                  <button
+                    className={`tier-card ${formTier === 'tier1' ? 'selected' : ''}`}
+                    onClick={() => setFormTier('tier1')}
+                  >
+                    <span className="tier-card-badge">Tier 1</span>
+                    <span className="tier-card-name">Profile Banner</span>
+                    <span className="tier-card-price tier-free">Free</span>
+                    <span className="tier-card-desc">Popup on your seller profile page</span>
+                  </button>
+                  <button
+                    className={`tier-card ${formTier === 'browse_banner' ? 'selected' : ''}`}
+                    onClick={() => setFormTier('browse_banner')}
+                  >
+                    <span className="tier-card-badge">Tier 2</span>
+                    <span className="tier-card-name">Browse Banner</span>
+                    <span className="tier-card-price">₹500/day</span>
+                    <span className="tier-card-desc">Rotating banner on the browse page</span>
+                  </button>
+                  <button
+                    className={`tier-card ${formTier === 'splash' ? 'selected' : ''}`}
+                    onClick={() => setFormTier('splash')}
+                  >
+                    <span className="tier-card-badge">Tier 3</span>
+                    <span className="tier-card-name">Splash Screen</span>
+                    <span className="tier-card-price">₹1,000/day</span>
+                    <span className="tier-card-desc">Full-screen when consumers open the app</span>
+                  </button>
+                </div>
               </div>
-            </div>
+            ) : (
+              <p className="form-help" style={{ marginBottom: 16 }}>
+                Tier: <strong>{formTier === 'tier1' ? 'Profile Banner' : formTier === 'browse_banner' ? 'Browse Banner' : 'Splash Screen'}</strong>
+                {' '}· Content changes apply immediately wherever this is displayed.
+              </p>
+            )}
 
             {/* Image */}
             <div className="form-group">
@@ -307,8 +392,8 @@ export default function SellerAnnouncements() {
               </>
             )}
 
-            {/* Days + total — for Tier 2/3 */}
-            {formTier !== 'tier1' && (
+            {/* Days + total — new Tier 2/3 only */}
+            {formTier !== 'tier1' && !editingOffer && (
               <div className="form-group">
                 <label>Number of days</label>
                 <div className="boost-days-row">
@@ -323,7 +408,16 @@ export default function SellerAnnouncements() {
               </div>
             )}
 
-            {/* Live preview — for Tier 2/3 */}
+            {/* Live previews — all tiers */}
+            {formTier === 'tier1' && (
+              <ProfileBannerPreview
+                title={form.title}
+                body={form.body}
+                imageUrl={posterPreview}
+                noExpiry={form.noExpiry}
+                expiresAt={form.expires_at}
+              />
+            )}
             {formTier === 'browse_banner' && (
               <BrowseBannerPreview
                 title={form.title}
@@ -346,10 +440,10 @@ export default function SellerAnnouncements() {
               <button onClick={closeForm}>Cancel</button>
               <button
                 className="btn-primary-sm"
-                onClick={create}
-                disabled={saving || uploading || !form.title || (formTier === 'tier1' && !form.noExpiry && !form.expires_at)}
+                onClick={editingOffer ? update : create}
+                disabled={saving || uploading || !form.title || (!editingOffer && formTier === 'tier1' && !form.noExpiry && !form.expires_at)}
               >
-                {uploading ? 'Uploading…' : saving ? 'Publishing…' : 'Publish'}
+                {uploading ? 'Uploading…' : saving ? (editingOffer ? 'Saving…' : 'Publishing…') : (editingOffer ? 'Save changes' : 'Publish')}
               </button>
             </div>
           </div>
@@ -372,7 +466,10 @@ export default function SellerAnnouncements() {
                     <span className={`offer-status-badge ${s}`}>
                       {s === 'permanent' ? '● Live' : s === 'active' ? '● Live' : '✕ Expired'}
                     </span>
-                    <button className="delete-offer-btn" onClick={() => remove(a.id)}>Delete</button>
+                    <div className="offer-card-actions">
+                      <button className="edit-offer-btn" onClick={() => openEdit(a)}>Edit</button>
+                      <button className="delete-offer-btn" onClick={() => remove(a.id)}>Delete</button>
+                    </div>
                   </div>
                   <h3 className="offer-card-title">{a.title}</h3>
                   {a.body && <p className="offer-card-body">{a.body}</p>}

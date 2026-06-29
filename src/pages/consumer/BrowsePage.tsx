@@ -43,6 +43,9 @@ export default function BrowsePage() {
 
   useEffect(() => {
     loadBoosts()
+    function onVisible() { if (document.visibilityState === 'visible') loadBoosts() }
+    document.addEventListener('visibilitychange', onVisible)
+    return () => document.removeEventListener('visibilitychange', onVisible)
   }, [])
 
   useEffect(() => {

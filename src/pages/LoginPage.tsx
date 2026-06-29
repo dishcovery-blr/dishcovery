@@ -1,32 +1,27 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { signIn } from '../lib/supabase'
-import { useAuth } from '../context/AuthContext'
 
 export default function LoginPage() {
   const navigate = useNavigate()
-  const { user, role, seller, loading: authLoading } = useAuth()
   const [form, setForm] = useState({ email: '', password: '' })
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
-  // Once auth context has resolved after sign-in, navigate to the right place
-  useEffect(() => {
-    if (authLoading || !user) return
-    if (role === 'admin') navigate('/admin', { replace: true })
-    else if (role === 'seller') navigate(seller ? '/seller/dashboard' : '/seller/onboarding', { replace: true })
-    else navigate('/browse', { replace: true })
-  }, [user, role, seller, authLoading])
-
   async function handleLogin() {
     setLoading(true)
     setError('')
-    const { error: err } = await signIn(form.email, form.password)
+    const { data, error: err } = await signIn(form.email, form.password)
     if (err) {
       setError(err.message)
       setLoading(false)
+      return
     }
-    // Navigation is handled by the useEffect above once auth context updates
+    // Navigate immediately from the sign-in response — no auth context race
+    const role = (data.user?.user_metadata?.role as string) ?? null
+    if (role === 'admin') navigate('/admin', { replace: true })
+    else if (role === 'seller') navigate('/seller/dashboard', { replace: true })
+    else navigate('/browse', { replace: true })
   }
 
   return (

@@ -34,7 +34,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true)
 
   async function loadProfile(currentUser: User) {
-    const userRole = getUserRole(currentUser) as UserRole
+    let userRole = getUserRole(currentUser) as UserRole
+
+    // Fallback: metadata missing or wrong — check DB directly
+    if (!userRole || (userRole !== 'seller' && userRole !== 'consumer' && userRole !== 'admin')) {
+      const [{ data: sellerRow }, { data: consumerRow }] = await Promise.all([
+        supabase.from('sellers').select('id').eq('auth_user_id', currentUser.id).maybeSingle(),
+        supabase.from('consumers').select('id').eq('auth_user_id', currentUser.id).maybeSingle(),
+      ])
+      if (sellerRow) userRole = 'seller'
+      else if (consumerRow) userRole = 'consumer'
+    }
+
     setRole(userRole)
 
     if (userRole === 'admin') {
@@ -58,7 +69,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (data) {
         setConsumer(data)
       } else {
-        // Trigger may have failed during signup — create record now that we have a session
         const display_name =
           currentUser.user_metadata?.display_name ||
           currentUser.email?.split('@')[0] ||

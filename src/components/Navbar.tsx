@@ -46,12 +46,10 @@ export default function Navbar() {
                 My listing ↗
               </a>
             )}
-            <button className="navbar-btn-outline" onClick={handleSignOut}>Sign out</button>
           </>
         ) : (
           <>
             <button className="navbar-link" onClick={() => navigate('/browse')}>Browse</button>
-            <button className="navbar-btn-outline" onClick={handleSignOut}>Sign out</button>
           </>
         )}
       </div>

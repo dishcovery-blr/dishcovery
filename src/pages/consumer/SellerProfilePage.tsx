@@ -84,10 +84,10 @@ export default function SellerProfilePage() {
       setSeller(rest)
       setReviews(rawReviews ?? [])
       setAvgRating(computeAvg(rawReviews ?? []))
-      const activeWithPoster = (data.offers ?? []).find((o: Offer) =>
-        o.is_active && new Date(o.expires_at) > new Date() && o.photo_urls?.length > 0
+      const activeOffer = (data.offers ?? []).find((o: Offer) =>
+        o.is_active && new Date(o.expires_at) > new Date()
       )
-      if (activeWithPoster) setOfferPopup(activeWithPoster)
+      if (activeOffer) setOfferPopup(activeOffer)
     }
     setLoading(false)
   }
@@ -191,13 +191,15 @@ export default function SellerProfilePage() {
         <div className="offer-popup-overlay" onClick={() => setPopupDismissed(true)}>
           <div className="offer-popup" onClick={e => e.stopPropagation()}>
             <button className="offer-popup-close" onClick={() => setPopupDismissed(true)}>✕</button>
-            <img src={getUrl(offerPopup.photo_urls[0])} alt={offerPopup.title} className="offer-popup-img" />
+            {offerPopup.photo_urls?.length > 0 && <img src={getUrl(offerPopup.photo_urls[0])} alt={offerPopup.title} className="offer-popup-img" />}
             <div className="offer-popup-body">
               <h3>{offerPopup.title}</h3>
               {offerPopup.body && <p>{offerPopup.body}</p>}
-              <p className="offer-popup-expiry">
-                Expires {new Date(offerPopup.expires_at).toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
-              </p>
+              {new Date(offerPopup.expires_at).getFullYear() < new Date().getFullYear() + 5 && (
+                <p className="offer-popup-expiry">
+                  Expires {new Date(offerPopup.expires_at).toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
+                </p>
+              )}
               <button className="whatsapp-btn" style={{ width: '100%', justifyContent: 'center', marginTop: 12 }} onClick={() => { setPopupDismissed(true); handleWhatsappTap() }}>
                 Order now on WhatsApp
               </button>

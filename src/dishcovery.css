@@ -1874,7 +1874,7 @@ img { max-width: 100%; display: block; }
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #ccc;
+  color: #555;
   backdrop-filter: blur(4px);
   transition: color 0.15s, transform 0.1s;
 }

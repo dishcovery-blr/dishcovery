@@ -173,9 +173,10 @@ export default function AdminSellers() {
                   {/* Subscription extension */}
                   <div className="admin-extend-group">
                     <span className="admin-extend-label">Extend:</span>
-                    <button className="admin-btn outline" onClick={() => extendSubscription(seller.id, 30)}>+30d</button>
-                    <button className="admin-btn outline" onClick={() => extendSubscription(seller.id, 90)}>+90d</button>
+                    <button className="admin-btn outline" onClick={() => extendSubscription(seller.id, 90)}>+3mo</button>
+                    <button className="admin-btn outline" onClick={() => extendSubscription(seller.id, 180)}>+6mo</button>
                     <button className="admin-btn outline" onClick={() => extendSubscription(seller.id, 365)}>+1yr</button>
+                    <button className="admin-btn outline" onClick={() => extendSubscription(seller.id, 730)}>+2yr</button>
                   </div>
 
                   {/* Featured toggle */}

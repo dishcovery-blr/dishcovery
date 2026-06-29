@@ -1,11 +1,18 @@
+import { useState } from 'react'
 import { useNavigate, Navigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 
-const MONTHLY_PRICE = 999
+const PLANS = [
+  { id: '3m',  label: '3 months',  months: 3,  days: 90,  price: 2499,  perMonth: 833,  badge: null },
+  { id: '6m',  label: '6 months',  months: 6,  days: 180, price: 4499,  perMonth: 750,  badge: 'Popular' },
+  { id: '12m', label: '1 year',    months: 12, days: 365, price: 7999,  perMonth: 667,  badge: 'Best value' },
+  { id: '24m', label: '2 years',   months: 24, days: 730, price: 13999, perMonth: 583,  badge: null },
+]
 
 export default function SellerSubscribe() {
   const { seller, loading } = useAuth()
   const navigate = useNavigate()
+  const [selectedPlan, setSelectedPlan] = useState(PLANS[1]) // default: 6 months
 
   if (loading) return <div className="page-loading">Loading…</div>
   if (!seller) return <Navigate to="/login" replace />
@@ -42,25 +49,43 @@ export default function SellerSubscribe() {
         </div>
       </div>
 
-      {/* Plan */}
-      <div className="subscribe-plan">
-        <div className="subscribe-plan-header">
-          <span className="subscribe-plan-name">Dishcovery Listing</span>
-          <span className="subscribe-plan-price">₹{MONTHLY_PRICE.toLocaleString('en-IN')}<span className="subscribe-plan-period">/month</span></span>
-        </div>
+      {/* What's included */}
+      <div className="subscribe-includes">
+        <p className="subscribe-includes-title">What's included</p>
         <ul className="subscribe-plan-features">
           <li>Visible on browse to all consumers</li>
           <li>Full profile — menu, gallery, announcements</li>
           <li>Direct WhatsApp inquiries</li>
-          <li>Profile views & tap analytics</li>
+          <li>Profile views &amp; tap analytics</li>
           <li>FSSAI verified badge</li>
         </ul>
+      </div>
+
+      {/* Plan picker */}
+      <div className="subscribe-plans-section">
+        <p className="subscribe-includes-title">Choose a plan</p>
+        <div className="subscribe-plans-grid">
+          {PLANS.map(plan => (
+            <button
+              key={plan.id}
+              className={`sub-plan-card ${selectedPlan.id === plan.id ? 'selected' : ''}`}
+              onClick={() => setSelectedPlan(plan)}
+            >
+              {plan.badge && <span className="sub-plan-badge">{plan.badge}</span>}
+              <span className="sub-plan-label">{plan.label}</span>
+              <span className="sub-plan-price">₹{plan.price.toLocaleString('en-IN')}</span>
+              <span className="sub-plan-per-month">₹{plan.perMonth.toLocaleString('en-IN')}/mo</span>
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Payment */}
       <div className="subscribe-payment">
         <h3>How to pay</h3>
-        <p className="subscribe-pay-line">Transfer <strong>₹{MONTHLY_PRICE.toLocaleString('en-IN')}</strong> via UPI to:</p>
+        <p className="subscribe-pay-line">
+          Transfer <strong>₹{selectedPlan.price.toLocaleString('en-IN')}</strong> for <strong>{selectedPlan.label}</strong> via UPI to:
+        </p>
         <div className="subscribe-upi">dishcovery.blr@gmail.com</div>
         <p className="subscribe-pay-line" style={{ marginTop: 14 }}>Use this reference so we can match your payment:</p>
         <div className="subscribe-ref">{refCode}</div>
@@ -68,7 +93,7 @@ export default function SellerSubscribe() {
           Once you've paid, email us at <strong>dishcovery.blr@gmail.com</strong> with your reference code. We'll activate your listing within 24 hours.
         </p>
         <a
-          href={`mailto:dishcovery.blr@gmail.com?subject=Subscription payment - ${refCode}&body=Hi, I've transferred ₹${MONTHLY_PRICE} for my Dishcovery subscription. Reference: ${refCode}. Please activate my listing. Kitchen: ${seller.display_name}`}
+          href={`mailto:dishcovery.blr@gmail.com?subject=Subscription payment - ${refCode}&body=Hi, I've transferred ₹${selectedPlan.price} for a ${selectedPlan.label} Dishcovery subscription. Reference: ${refCode}. Please activate my listing. Kitchen: ${seller.display_name}`}
           className="subscribe-email-btn"
         >
           Email us after payment

@@ -110,7 +110,7 @@ export default function ConsumerProfile() {
 
   async function handleSignOut() {
     await signOut()
-    navigate('/')
+    navigate('/login', { replace: true })
   }
 
   if (!consumer || !user) return <div className="page-loading">Loading…</div>

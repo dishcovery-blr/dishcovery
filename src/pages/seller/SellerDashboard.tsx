@@ -10,7 +10,7 @@ export default function SellerDashboard() {
 
   useEffect(() => {
     if (seller) loadStats()
-  }, [seller])
+  }, [seller?.id])
 
   async function loadStats() {
     if (!seller) return
@@ -28,7 +28,7 @@ export default function SellerDashboard() {
     })
   }
 
-  if (loading) return <div className="page-loading">Loading…</div>
+  if (loading && !seller) return <div className="page-loading">Loading…</div>
   if (!seller) return <div className="page-loading">No seller profile found.</div>
 
   const subscriptionEnd = seller.subscription_end ? new Date(seller.subscription_end) : null

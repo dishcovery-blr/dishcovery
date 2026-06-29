@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState, ReactNode } from 'react'
+import { createContext, useContext, useEffect, useRef, useState, ReactNode } from 'react'
 import type { User, Session } from '@supabase/supabase-js'
 import { supabase, getUserRole } from '../lib/supabase'
 import type { Seller, Consumer } from '../types/database'
@@ -32,8 +32,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [seller, setSeller] = useState<Seller | null>(null)
   const [consumer, setConsumer] = useState<Consumer | null>(null)
   const [loading, setLoading] = useState(true)
+  const currentUserRef = useRef<string | null>(null)
 
   async function loadProfile(currentUser: User) {
+    currentUserRef.current = currentUser.id
     let userRole = getUserRole(currentUser) as UserRole
 
     // Fallback: metadata missing or wrong — check DB directly
@@ -128,6 +130,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
 
         if (event === 'SIGNED_IN') {
+          // Skip re-loading profile if it's the same user already in context (e.g. token
+          // refresh or repeated SIGNED_IN event) — avoids full-page loading flash on navigation.
+          if (currentUserRef.current === session.user.id) return
           setLoading(true)
           await loadProfile(session.user)
         }

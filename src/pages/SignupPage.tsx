@@ -75,6 +75,11 @@ export default function SignupPage() {
                 <strong>Discover food</strong>
                 <span>I want to find home kitchens near me</span>
               </button>
+              <button className="account-type-card" onClick={() => navigate('/vendor/signup')}>
+                <span className="account-type-icon">📦</span>
+                <strong>Advertise to sellers</strong>
+                <span>I sell products or equipment to home bakers</span>
+              </button>
             </div>
             <div className="auth-links">
               <span>Already have an account?</span>

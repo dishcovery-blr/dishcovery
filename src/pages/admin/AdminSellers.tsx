@@ -137,7 +137,7 @@ export default function AdminSellers() {
                     </div>
                     <div className="admin-seller-meta">
                       <span className={`admin-status-pill ${seller.status}`}>{seller.status}</span>
-                      <span className="admin-seller-type">{seller.seller_type.replace('_', ' ')}</span>
+                      <span className="admin-seller-type">{seller.seller_type === 'home_cook' ? 'Cloud Kitchen' : 'Baker'}</span>
                       <span>📍 {seller.location_text}</span>
                       <span>📱 {seller.whatsapp_number}</span>
                     </div>

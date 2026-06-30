@@ -109,7 +109,7 @@ function SellerApprovalCard({
       <div className="seller-card-header">
         <div>
           <h3>{seller.display_name}</h3>
-          <span className="seller-type-badge">{seller.seller_type.replace('_', ' ')}</span>
+          <span className="seller-type-badge">{seller.seller_type === 'home_cook' ? 'Cloud Kitchen' : 'Baker'}</span>
           <span style={{ color: fssaiBadge.color, fontSize: 12, marginLeft: 8 }}>
             {fssaiBadge.label}
           </span>

@@ -103,7 +103,7 @@ export default function SignupPage() {
                     className={`type-toggle-btn ${form.seller_type === 'home_cook' ? 'active' : ''}`}
                     onClick={() => setForm({ ...form, seller_type: 'home_cook' })}
                   >
-                    🍛 Home Cook
+                    🍳 Cloud Kitchen
                   </button>
                 </div>
               </div>

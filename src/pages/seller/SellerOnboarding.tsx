@@ -146,9 +146,9 @@ export default function SellerOnboarding() {
                 className={`type-card ${sellerType === 'home_cook' ? 'selected' : ''}`}
                 onClick={() => setSellerType('home_cook')}
               >
-                <span className="type-icon">🍛</span>
-                <strong>Home Cook</strong>
-                <span>I take occasional orders from my home kitchen</span>
+                <span className="type-icon">🍳</span>
+                <strong>Cloud Kitchen</strong>
+                <span>I run a home kitchen or cloud kitchen business</span>
               </button>
             </div>
             <button className="btn-primary" onClick={() => setStep('details')}>Continue</button>

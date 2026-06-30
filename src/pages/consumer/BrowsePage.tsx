@@ -312,7 +312,7 @@ function SellerCard({ seller, saved, onSave, onClick }: { seller: SellerCard; sa
         }
         {seller.is_featured && <span className="featured-badge">Featured</span>}
         <span className={`type-badge ${seller.seller_type}`}>
-          {seller.seller_type === 'home_cook' ? 'Home Cook' : 'Baker'}
+          {seller.seller_type === 'home_cook' ? 'Cloud Kitchen' : 'Baker'}
         </span>
         <button className={`card-save-btn ${saved ? 'saved' : ''}`} onClick={onSave} aria-label={saved ? 'Unsave' : 'Save'}>
           {saved ? '♥' : '♡'}

@@ -1,8 +1,9 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { signUpVendor } from '../../lib/supabase'
 
 export default function VendorSignup() {
+  const navigate = useNavigate()
   const [form, setForm] = useState({
     company_name: '',
     contact_name: '',
@@ -27,7 +28,7 @@ export default function VendorSignup() {
     setLoading(true)
     setError('')
 
-    const { error: err } = await signUpVendor(
+    const { data, error: err } = await signUpVendor(
       form.email, form.password,
       form.company_name, form.contact_name,
       form.whatsapp_number, form.website_url,
@@ -36,7 +37,11 @@ export default function VendorSignup() {
     if (err) {
       setError(err.message)
       setLoading(false)
+    } else if (data?.session) {
+      // Auto-confirm is on — session returned immediately, go straight to dashboard
+      navigate('/vendor/dashboard', { replace: true })
     } else {
+      // Email confirmation required
       setDone(true)
     }
   }

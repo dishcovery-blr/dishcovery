@@ -39,11 +39,11 @@ function activeBoost(ad: AdWithBoost): VendorAdBoost | null {
 
 export default function VendorDashboard() {
   const navigate = useNavigate()
-  const { vendor } = useRequireVendor()
+  const { vendor, loading: authLoading } = useRequireVendor()
   const { user } = useAuth()
 
   const [ads, setAds] = useState<AdWithBoost[]>([])
-  const [loading, setLoading] = useState(true)
+  const [adsLoading, setAdsLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
   const [saving, setSaving] = useState(false)
   const [uploading, setUploading] = useState(false)
@@ -67,7 +67,7 @@ export default function VendorDashboard() {
       .eq('is_active', true)
       .order('created_at', { ascending: false })
     setAds((data ?? []) as AdWithBoost[])
-    setLoading(false)
+    setAdsLoading(false)
   }
 
   function closeForm() {
@@ -142,7 +142,7 @@ export default function VendorDashboard() {
 
   const total = AD_PRICES[adType] * days
 
-  if (!vendor) return <div className="page-loading">Loading…</div>
+  if (authLoading || !vendor) return <div className="page-loading">Loading…</div>
 
   return (
     <div className="dashboard-page">
@@ -259,7 +259,7 @@ export default function VendorDashboard() {
       {/* ── Active ads list ── */}
       <h2 className="section-title" style={{ marginTop: 24 }}>Your ads</h2>
 
-      {loading ? (
+      {adsLoading ? (
         <div className="page-loading" style={{ minHeight: 80 }}>Loading…</div>
       ) : ads.length === 0 ? (
         <div className="browse-empty">

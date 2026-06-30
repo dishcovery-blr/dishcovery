@@ -64,20 +64,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const { data } = await supabase.from('sellers').select('*').eq('auth_user_id', currentUser.id).single()
       setSeller(data)
     } else if (userRole === 'vendor') {
-      const { data } = await supabase.from('vendors').select('*').eq('auth_user_id', currentUser.id).single()
-      if (data) {
-        setVendor(data)
-      } else {
-        const m = currentUser.user_metadata ?? {}
-        await supabase.from('vendors').insert({
-          auth_user_id: currentUser.id,
-          company_name: m.company_name || m.display_name || 'My Company',
-          contact_name: m.contact_name || '',
-          whatsapp_number: m.whatsapp_number || null,
-          website_url: m.website_url || null,
-        })
-        const { data: created } = await supabase.from('vendors').select('*').eq('auth_user_id', currentUser.id).single()
-        setVendor(created)
+      try {
+        const { data } = await supabase.from('vendors').select('*').eq('auth_user_id', currentUser.id).maybeSingle()
+        if (data) {
+          setVendor(data)
+        } else {
+          const m = currentUser.user_metadata ?? {}
+          const { error: insertErr } = await supabase.from('vendors').insert({
+            auth_user_id: currentUser.id,
+            company_name: m.company_name || m.display_name || 'My Company',
+            contact_name: m.contact_name || '',
+            whatsapp_number: m.whatsapp_number || null,
+            website_url: m.website_url || null,
+          })
+          if (!insertErr) {
+            const { data: created } = await supabase.from('vendors').select('*').eq('auth_user_id', currentUser.id).maybeSingle()
+            setVendor(created)
+          }
+        }
+      } catch (e) {
+        console.error('vendor profile load error', e)
       }
     } else if (userRole === 'consumer') {
       const { data } = await supabase.from('consumers').select('*').eq('auth_user_id', currentUser.id).single()

@@ -176,9 +176,17 @@ export default function SellerDashboard() {
       </div>
 
       {/* Vendor Deals — Tier 1 */}
-      {vendorListings.length > 0 && (
-        <div className="vendor-deals-section">
-          <h2 className="section-title">Vendor Deals</h2>
+      <div className="vendor-deals-section">
+        <div className="vendor-deals-header">
+          <h2 className="section-title" style={{ margin: 0 }}>Vendor Deals</h2>
+          <span className="vendor-deals-tag">For sellers</span>
+        </div>
+        {vendorListings.length === 0 ? (
+          <div className="vendor-deals-empty">
+            <span>🛒</span>
+            <p>Deals from equipment and ingredient suppliers will appear here</p>
+          </div>
+        ) : (
           <div className="vendor-deals-scroll">
             {vendorListings.map(ad => (
               <div key={ad.id} className="vendor-deal-card" onClick={() => handleVendorCta(ad)}>
@@ -196,8 +204,8 @@ export default function SellerDashboard() {
               </div>
             ))}
           </div>
-        </div>
-      )}
+        )}
+      </div>
 
       <h2 className="section-title">Manage</h2>
       <div className="dashboard-actions">

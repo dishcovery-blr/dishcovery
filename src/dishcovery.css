@@ -2026,3 +2026,191 @@ img { max-width: 100%; display: block; }
   transition: border-color 0.15s, color 0.15s;
 }
 .cta-type-btn.active { border-color: #E8552A; color: #E8552A; background: #fff8f6; }
+
+/* ── Vendor tier cards (ad placement selector) ───────────────── */
+.vendor-tier-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.vendor-tier-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  background: #fff;
+  border: 1.5px solid #e8e8e8;
+  border-radius: 14px;
+  padding: 14px 16px;
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
+  position: relative;
+}
+
+.vendor-tier-card.active {
+  border-color: var(--tc);
+  background: color-mix(in srgb, var(--tc) 6%, #fff);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--tc) 15%, transparent);
+}
+
+.vtc-left {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.vtc-badge {
+  font-size: 10px;
+  font-weight: 800;
+  color: #fff;
+  background: var(--tc);
+  border-radius: 6px;
+  padding: 2px 6px;
+  letter-spacing: 0.3px;
+}
+
+.vtc-icon { font-size: 18px; line-height: 1; }
+
+.vtc-body { flex: 1; min-width: 0; }
+
+.vtc-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin-bottom: 2px;
+}
+
+.vendor-tier-card.active .vtc-name { color: var(--tc); }
+
+.vtc-desc {
+  font-size: 11px;
+  color: #888;
+  line-height: 1.4;
+}
+
+.vtc-price {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--tc);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.vtc-price span {
+  font-size: 10px;
+  font-weight: 500;
+  color: #aaa;
+}
+
+.vtc-check {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 20px;
+  height: 20px;
+  background: var(--tc);
+  color: #fff;
+  border-radius: 50%;
+  font-size: 11px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ── Ad preview panel ────────────────────────────────────────── */
+.ad-preview-wrap {
+  background: #f5f5f5;
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  justify-content: center;
+}
+
+.ad-preview-splash {
+  background: #fff;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+  width: 100%;
+  max-width: 300px;
+}
+
+.ad-preview-splash-img {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+  display: block;
+}
+
+.ad-preview-splash-body {
+  padding: 16px;
+}
+
+.ad-preview-splash-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 0 6px;
+  line-height: 1.3;
+}
+
+.ad-preview-splash-desc {
+  font-size: 12px;
+  color: #666;
+  margin: 0 0 12px;
+  line-height: 1.4;
+}
+
+.ad-preview-splash-cta {
+  display: inline-block;
+  background: #E8552A;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 10px 20px;
+  border-radius: 50px;
+}
+
+/* ── Vendor Deals section header & empty state ───────────────── */
+.vendor-deals-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.vendor-deals-tag {
+  font-size: 10px;
+  font-weight: 600;
+  color: #888;
+  background: #f0f0f0;
+  padding: 2px 8px;
+  border-radius: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.vendor-deals-empty {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #fafafa;
+  border: 1.5px dashed #e0e0e0;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 8px;
+}
+
+.vendor-deals-empty span { font-size: 24px; flex-shrink: 0; }
+
+.vendor-deals-empty p {
+  font-size: 13px;
+  color: #999;
+  margin: 0;
+  line-height: 1.4;
+}

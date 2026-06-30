@@ -1,9 +1,11 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { signUpVendor } from '../../lib/supabase'
+import { useAuth } from '../../context/AuthContext'
 
 export default function VendorSignup() {
   const navigate = useNavigate()
+  const { vendor } = useAuth()
   const [form, setForm] = useState({
     company_name: '',
     contact_name: '',
@@ -15,6 +17,15 @@ export default function VendorSignup() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [done, setDone] = useState(false)
+  const [settingUp, setSettingUp] = useState(false)
+
+  // When auto-confirm is on, auth context sets vendor after SIGNED_IN fires —
+  // wait for that before navigating so the route guard sees a logged-in user.
+  useEffect(() => {
+    if (settingUp && vendor) {
+      navigate('/vendor/dashboard', { replace: true })
+    }
+  }, [settingUp, vendor])
 
   function set(k: string, v: string) {
     setForm(f => ({ ...f, [k]: v }))
@@ -38,12 +49,23 @@ export default function VendorSignup() {
       setError(err.message)
       setLoading(false)
     } else if (data?.session) {
-      // Auto-confirm is on — session returned immediately, go straight to dashboard
-      navigate('/vendor/dashboard', { replace: true })
+      // Auto-confirm — session already live, wait for auth context to catch up
+      setSettingUp(true)
     } else {
       // Email confirmation required
       setDone(true)
     }
+  }
+
+  if (settingUp) {
+    return (
+      <div className="auth-page">
+        <div className="auth-card" style={{ textAlign: 'center' }}>
+          <div className="auth-logo"><img src="/logo.png" alt="Dishcovery" className="auth-logo-img" /></div>
+          <p className="auth-subtitle">Setting up your account…</p>
+        </div>
+      </div>
+    )
   }
 
   if (done) {

@@ -1,9 +1,8 @@
 import { useState } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
-import { signUpVendor, supabase } from '../../lib/supabase'
+import { Link } from 'react-router-dom'
+import { signUpVendor } from '../../lib/supabase'
 
 export default function VendorSignup() {
-  const navigate = useNavigate()
   const [form, setForm] = useState({
     company_name: '',
     contact_name: '',
@@ -14,6 +13,7 @@ export default function VendorSignup() {
   })
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [done, setDone] = useState(false)
 
   function set(k: string, v: string) {
     setForm(f => ({ ...f, [k]: v }))
@@ -27,26 +27,36 @@ export default function VendorSignup() {
     setLoading(true)
     setError('')
 
-    const { data, error: signupErr } = await signUpVendor(
+    const { error: err } = await signUpVendor(
       form.email, form.password,
       form.company_name, form.contact_name,
       form.whatsapp_number, form.website_url,
     )
-    if (signupErr) { setError(signupErr.message); setLoading(false); return }
 
-    // Create vendor profile row
-    const userId = data.user?.id
-    if (userId) {
-      await supabase.from('vendors').insert({
-        auth_user_id: userId,
-        company_name: form.company_name,
-        contact_name: form.contact_name,
-        whatsapp_number: form.whatsapp_number || null,
-        website_url: form.website_url || null,
-      })
+    if (err) {
+      setError(err.message)
+      setLoading(false)
+    } else {
+      setDone(true)
     }
+  }
 
-    navigate('/vendor/dashboard', { replace: true })
+  if (done) {
+    return (
+      <div className="auth-page">
+        <div className="auth-card">
+          <div className="auth-logo"><img src="/logo.png" alt="Dishcovery" className="auth-logo-img" /></div>
+          <h1 className="auth-title" style={{ textAlign: 'center' }}>Check your email</h1>
+          <p className="auth-subtitle" style={{ textAlign: 'center' }}>
+            We've sent a confirmation link to <strong>{form.email}</strong>.
+            Click it to verify your account, then sign in.
+          </p>
+          <Link to="/login" className="auth-btn" style={{ textAlign: 'center', display: 'block' }}>
+            Go to sign in
+          </Link>
+        </div>
+      </div>
+    )
   }
 
   return (

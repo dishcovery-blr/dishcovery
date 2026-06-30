@@ -76,7 +76,14 @@ export async function signUpVendor(
     email,
     password,
     options: {
-      data: { role: 'vendor', display_name: companyName },
+      data: {
+        role: 'vendor',
+        display_name: companyName,
+        company_name: companyName,
+        contact_name: contactName,
+        whatsapp_number: whatsappNumber || null,
+        website_url: websiteUrl || null,
+      },
     },
   })
 }

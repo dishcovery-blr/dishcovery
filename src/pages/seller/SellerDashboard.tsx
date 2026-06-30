@@ -2,14 +2,27 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import { supabase, signOut } from '../../lib/supabase'
+import type { VendorAd } from '../../types/database'
+
+const STORAGE_URL = `${import.meta.env.VITE_SUPABASE_URL}/storage/v1/object/public/seller-media`
+
+interface ActiveVendorAd extends VendorAd {
+  vendor_name: string
+}
 
 export default function SellerDashboard() {
   const { seller, loading } = useAuth()
   const navigate = useNavigate()
   const [stats, setStats] = useState({ views: 0, taps: 0, menuItems: 0, avgRating: 0 })
+  const [vendorListings, setVendorListings] = useState<ActiveVendorAd[]>([])
+  const [vendorBanner, setVendorBanner] = useState<ActiveVendorAd | null>(null)
+  const [vendorSplash, setVendorSplash] = useState<ActiveVendorAd | null>(null)
+  const [splashDismissed, setSplashDismissed] = useState(
+    !!sessionStorage.getItem('vendor_splash_shown')
+  )
 
   useEffect(() => {
-    if (seller) loadStats()
+    if (seller) { loadStats(); loadVendorAds() }
   }, [seller?.id])
 
   async function loadStats() {
@@ -28,6 +41,42 @@ export default function SellerDashboard() {
     })
   }
 
+  async function loadVendorAds() {
+    const now = new Date().toISOString()
+    const { data } = await supabase
+      .from('vendor_ad_boosts')
+      .select('*, vendor_ads(*, vendors(company_name))')
+      .eq('payment_status', 'paid')
+      .lte('starts_at', now)
+      .gt('ends_at', now)
+    if (!data) return
+    const toAd = (b: any): ActiveVendorAd => ({
+      ...b.vendor_ads,
+      vendor_name: b.vendor_ads?.vendors?.company_name ?? '',
+    })
+    setVendorListings(data.filter((b: any) => b.vendor_ads?.ad_type === 'listing').map(toAd))
+    const banners = data.filter((b: any) => b.vendor_ads?.ad_type === 'banner').map(toAd)
+    if (banners.length) setVendorBanner(banners[Math.floor(Math.random() * banners.length)])
+    const splashes = data.filter((b: any) => b.vendor_ads?.ad_type === 'splash').map(toAd)
+    if (splashes.length && !sessionStorage.getItem('vendor_splash_shown')) {
+      setVendorSplash(splashes[Math.floor(Math.random() * splashes.length)])
+    }
+  }
+
+  function dismissSplash() {
+    sessionStorage.setItem('vendor_splash_shown', '1')
+    setSplashDismissed(true)
+  }
+
+  function handleVendorCta(ad: ActiveVendorAd) {
+    if (ad.cta_type === 'whatsapp') {
+      const num = ad.cta_value.replace(/\D/g, '')
+      window.open(`https://wa.me/${num}`, '_blank')
+    } else {
+      window.open(ad.cta_value, '_blank')
+    }
+  }
+
   if (loading && !seller) return <div className="page-loading">Loading…</div>
   if (!seller) return <div className="page-loading">No seller profile found.</div>
 
@@ -38,6 +87,44 @@ export default function SellerDashboard() {
 
   return (
     <div className="dashboard-page">
+
+      {/* Vendor splash — Tier 3 */}
+      {vendorSplash && !splashDismissed && (
+        <div className="splash-overlay" onClick={dismissSplash}>
+          <div className="splash-card" onClick={e => e.stopPropagation()}>
+            <button className="splash-close" onClick={dismissSplash}>✕</button>
+            {vendorSplash.photo_url && (
+              <img src={`${STORAGE_URL}/${vendorSplash.photo_url}`} alt={vendorSplash.title} className="splash-img" />
+            )}
+            <div className="splash-body">
+              <p className="vendor-ad-sponsor">Sponsored · {vendorSplash.vendor_name}</p>
+              <h2 className="splash-title">{vendorSplash.title}</h2>
+              {vendorSplash.body && <p className="splash-text">{vendorSplash.body}</p>}
+              <div className="splash-actions">
+                <button className="splash-cta" onClick={() => { dismissSplash(); handleVendorCta(vendorSplash) }}>
+                  {vendorSplash.cta_type === 'whatsapp' ? '💬 WhatsApp us' : '🌐 Visit website'}
+                </button>
+                <button className="splash-skip" onClick={dismissSplash}>Maybe later</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Vendor floating banner — Tier 2 */}
+      {vendorBanner && (
+        <div className="vendor-banner" onClick={() => handleVendorCta(vendorBanner)}>
+          {vendorBanner.photo_url && (
+            <img src={`${STORAGE_URL}/${vendorBanner.photo_url}`} alt="" className="vendor-banner-img" />
+          )}
+          <div className="vendor-banner-content">
+            <span className="vendor-banner-sponsor">Ad · {vendorBanner.vendor_name}</span>
+            <span className="vendor-banner-title">{vendorBanner.title}</span>
+          </div>
+          <span className="vendor-banner-cta">{vendorBanner.cta_type === 'whatsapp' ? '💬' : '→'}</span>
+        </div>
+      )}
+
       <div className="dashboard-header">
         <div>
           <h1 className="dashboard-title">Welcome back, {seller.display_name}!</h1>
@@ -87,6 +174,30 @@ export default function SellerDashboard() {
           <span className="dash-stat-label">Avg rating</span>
         </div>
       </div>
+
+      {/* Vendor Deals — Tier 1 */}
+      {vendorListings.length > 0 && (
+        <div className="vendor-deals-section">
+          <h2 className="section-title">Vendor Deals</h2>
+          <div className="vendor-deals-scroll">
+            {vendorListings.map(ad => (
+              <div key={ad.id} className="vendor-deal-card" onClick={() => handleVendorCta(ad)}>
+                {ad.photo_url && (
+                  <img src={`${STORAGE_URL}/${ad.photo_url}`} alt={ad.title} className="vendor-deal-img" />
+                )}
+                <div className="vendor-deal-body">
+                  <p className="vendor-deal-sponsor">Ad · {ad.vendor_name}</p>
+                  <p className="vendor-deal-title">{ad.title}</p>
+                  {ad.body && <p className="vendor-deal-desc">{ad.body}</p>}
+                  <div className="vendor-deal-cta">
+                    {ad.cta_type === 'whatsapp' ? '💬 WhatsApp' : '🌐 Visit site'} →
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       <h2 className="section-title">Manage</h2>
       <div className="dashboard-actions">

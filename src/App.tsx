@@ -21,6 +21,8 @@ import AdminSellers from './pages/admin/AdminSellers'
 import AdminFssai from './pages/admin/AdminFssai'
 import AdminConsumers from './pages/admin/AdminConsumers'
 import AdminBoosts from './pages/admin/AdminBoosts'
+import VendorSignup from './pages/vendor/VendorSignup'
+import VendorDashboard from './pages/vendor/VendorDashboard'
 import './dishcovery.css'
 import ForgotPasswordPage from './pages/ForgotPasswordPage'
 import ResetPasswordPage from './pages/ResetPasswordPage'
@@ -31,6 +33,7 @@ function RootRedirect() {
   if (loading) return <div className="page-loading">Loading…</div>
   if (!user) return <Navigate to="/" replace />
   if (role === 'admin') return <Navigate to="/admin" replace />
+  if (role === 'vendor') return <Navigate to="/vendor/dashboard" replace />
   if (role === 'seller') {
     if (!seller) return <Navigate to="/seller/onboarding" replace />
     return <Navigate to="/seller/dashboard" replace />
@@ -69,6 +72,8 @@ function AppRoutes() {
         <Route path="/admin/fssai" element={user ? <AdminFssai /> : <Navigate to="/" replace />} />
         <Route path="/admin/consumers" element={user ? <AdminConsumers /> : <Navigate to="/" replace />} />
         <Route path="/admin/boosts" element={user ? <AdminBoosts /> : <Navigate to="/" replace />} />
+        <Route path="/vendor/signup" element={<VendorSignup />} />
+        <Route path="/vendor/dashboard" element={user ? <VendorDashboard /> : <Navigate to="/vendor/signup" replace />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </>

@@ -21,6 +21,7 @@ export default function LoginPage() {
     const role = (data.user?.user_metadata?.role as string) ?? null
     if (role === 'admin') navigate('/admin', { replace: true })
     else if (role === 'seller') navigate('/seller/dashboard', { replace: true })
+    else if (role === 'vendor') navigate('/vendor/dashboard', { replace: true })
     else navigate('/browse', { replace: true })
   }
 

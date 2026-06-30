@@ -64,6 +64,23 @@ export async function signUpConsumer(
   return result
 }
 
+export async function signUpVendor(
+  email: string,
+  password: string,
+  companyName: string,
+  contactName: string,
+  whatsappNumber: string,
+  websiteUrl: string,
+) {
+  return supabase.auth.signUp({
+    email,
+    password,
+    options: {
+      data: { role: 'vendor', display_name: companyName },
+    },
+  })
+}
+
 export async function signIn(email: string, password: string) {
   return supabase.auth.signInWithPassword({ email, password })
 }
@@ -266,4 +283,30 @@ export async function getSubscriptionStatus(sellerId: string) {
 export function isSubscriptionActive(subscriptionEnd: string | null): boolean {
   if (!subscriptionEnd) return false
   return new Date(subscriptionEnd) > new Date()
+}
+
+// ── Vendor ad boosts ───────────────────────────────────────────
+// Razorpay slot: wire up payment here when GST is registered.
+export async function createVendorAdBoost(params: {
+  adId: string
+  vendorId: string
+  adType: 'listing' | 'banner' | 'splash'
+  daysPurchased: number
+  amountPaise: number
+}) {
+  const now = new Date()
+  const endsAt = new Date(now.getTime() + params.daysPurchased * 24 * 60 * 60 * 1000)
+  return supabase
+    .from('vendor_ad_boosts')
+    .insert({
+      ad_id: params.adId,
+      vendor_id: params.vendorId,
+      days_purchased: params.daysPurchased,
+      amount_paise: params.amountPaise,
+      payment_status: 'paid',
+      starts_at: now.toISOString(),
+      ends_at: endsAt.toISOString(),
+    })
+    .select()
+    .single()
 }

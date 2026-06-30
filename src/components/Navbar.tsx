@@ -7,7 +7,7 @@ export default function Navbar() {
   const navigate = useNavigate()
   const location = useLocation()
 
-  if (['/login', '/signup', '/seller/onboarding', '/', '/forgot-password', '/reset-password', '/terms'].includes(location.pathname)) return null
+  if (['/login', '/signup', '/seller/onboarding', '/', '/forgot-password', '/reset-password', '/terms', '/vendor/signup', '/vendor/dashboard'].includes(location.pathname)) return null
   if (role === 'consumer' && ['/browse', '/consumer/profile'].includes(location.pathname)) return null
 
   async function handleSignOut() {

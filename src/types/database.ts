@@ -154,6 +154,45 @@ export interface FssaiDocument {
   created_at: string
 }
 
+export type VendorAdType = 'listing' | 'banner' | 'splash'
+export type VendorCtaType = 'url' | 'whatsapp'
+export type VendorAdPaymentStatus = 'pending' | 'paid'
+
+export interface Vendor {
+  id: string
+  auth_user_id: string
+  company_name: string
+  contact_name: string
+  whatsapp_number: string | null
+  website_url: string | null
+  created_at: string
+}
+
+export interface VendorAd {
+  id: string
+  vendor_id: string
+  title: string
+  body: string | null
+  photo_url: string | null
+  ad_type: VendorAdType
+  cta_type: VendorCtaType
+  cta_value: string
+  is_active: boolean
+  created_at: string
+}
+
+export interface VendorAdBoost {
+  id: string
+  ad_id: string
+  vendor_id: string
+  days_purchased: number
+  amount_paise: number
+  payment_status: VendorAdPaymentStatus
+  starts_at: string | null
+  ends_at: string | null
+  created_at: string
+}
+
 // Enriched types for UI use
 export interface SellerWithDetails extends Seller {
   menu_categories?: MenuCategory[]

@@ -1960,3 +1960,69 @@ img { max-width: 100%; display: block; }
   border-radius: 8px;
 }
 .profile-save-btn:active { transform: scale(0.88); }
+
+/* ── Vendor floating banner (Tier 2) ────────────────────────── */
+.vendor-banner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #1a1a1a;
+  color: #fff;
+  padding: 10px 14px;
+  cursor: pointer;
+  margin-bottom: 0;
+}
+.vendor-banner-img { width: 48px; height: 48px; object-fit: cover; border-radius: 6px; flex-shrink: 0; }
+.vendor-banner-content { flex: 1; min-width: 0; }
+.vendor-banner-sponsor { font-size: 10px; color: #aaa; display: block; margin-bottom: 2px; }
+.vendor-banner-title { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }
+.vendor-banner-cta { font-size: 18px; flex-shrink: 0; }
+
+/* ── Vendor Deals section (Tier 1) ──────────────────────────── */
+.vendor-deals-section { margin-bottom: 4px; }
+.vendor-deals-scroll {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+  scrollbar-width: none;
+}
+.vendor-deals-scroll::-webkit-scrollbar { display: none; }
+.vendor-deal-card {
+  flex-shrink: 0;
+  width: 220px;
+  border: 1px solid #eee;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #fff;
+  cursor: pointer;
+  transition: box-shadow 0.15s;
+}
+.vendor-deal-card:hover { box-shadow: 0 2px 12px rgba(0,0,0,0.1); }
+.vendor-deal-img { width: 100%; height: 110px; object-fit: cover; display: block; }
+.vendor-deal-body { padding: 10px 12px 12px; }
+.vendor-deal-sponsor { font-size: 10px; color: #aaa; margin: 0 0 4px; }
+.vendor-deal-title { font-size: 13px; font-weight: 700; color: #1a1a1a; margin: 0 0 4px; line-height: 1.3; }
+.vendor-deal-desc { font-size: 12px; color: #666; margin: 0 0 8px; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.vendor-deal-cta { font-size: 12px; color: #E8552A; font-weight: 600; }
+
+/* ── Vendor ad portal ────────────────────────────────────────── */
+.vendor-ads-list { display: flex; flex-direction: column; gap: 16px; }
+.vendor-ad-type-badge { font-size: 11px; background: #f0f0f0; color: #555; padding: 2px 8px; border-radius: 20px; }
+.vendor-ad-sponsor { font-size: 11px; color: #888; margin: 0 0 6px; font-style: italic; }
+
+/* ── Vendor CTA type toggle ──────────────────────────────────── */
+.cta-type-row { display: flex; gap: 10px; margin-bottom: 0; }
+.cta-type-btn {
+  flex: 1;
+  padding: 10px;
+  border: 1.5px solid #e0e0e0;
+  border-radius: 10px;
+  background: #fff;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  color: #555;
+  transition: border-color 0.15s, color 0.15s;
+}
+.cta-type-btn.active { border-color: #E8552A; color: #E8552A; background: #fff8f6; }
